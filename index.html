@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f3efe6" />
+    <meta
+      name="description"
+      content="A small playground for a very strange universe. Explore quantum superposition through interactive wave interference, a Bloch sphere, and measurement experiments."
+    />
+    <meta
+      property="og:title"
+      content="Superposition — A playground for possibility"
+    />
+    <meta
+      property="og:description"
+      content="Make waves. Change a quantum state. See what happens when you measure. Three interactive experiments, one beautifully strange idea."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="color-scheme" content="light" />
+    <title>Superposition — A playground for possibility</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#experiments">Skip to experiments</a>
+    <header class="site-header wrap">
+      <a class="wordmark" href="#" aria-label="Superposition home"
+        ><span class="brand-symbol">ψ</span> superposition<span
+          class="brand-dot"
+          >.</span
+        ></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#experiments">The playground</a><a href="#idea">The idea</a
+        ><a
+          href="https://github.com/superposition/quantum-superposition"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Source <span aria-hidden="true">↗</span></a
+        >
+      </nav>
+      <span class="header-note">An illustrated field guide to possibility</span>
+    </header>
+    <main>
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-top">
+          <p class="eyebrow">Physics, with room to play.</p>
+          <span class="edition mono">No. 1 — Notes on the quantum world</span>
+        </div>
+        <h1 id="hero-title">
+          A little uncertain.<br /><span>A lot of possibility.</span>
+        </h1>
+        <div class="hero-bottom">
+          <p>
+            Before a measurement, a quantum state can hold<br
+              class="desktop-break"
+            />
+            more than one possibility. Let’s play with that.
+          </p>
+          <a class="text-link" href="#experiments"
+            >Enter the playground <span aria-hidden="true">↘</span></a
+          >
+        </div>
+      </section>
+
+      <section class="lab wrap" id="experiments" aria-labelledby="lab-title">
+        <div class="section-label">
+          <h2 id="lab-title">The playground</h2>
+          <span class="mono">Three experiments. One idea.</span>
+        </div>
+        <div class="lab-shell">
+          <div class="lab-tabs" role="tablist" aria-label="Quantum experiments">
+            <button
+              id="tab-wave"
+              role="tab"
+              aria-selected="true"
+              aria-controls="experiment-panel"
+              data-mode="0"
+            >
+              <span>01</span> Wave interference
+              <span class="tab-mark" aria-hidden="true">↗</span>
+            </button>
+            <button
+              id="tab-bloch"
+              role="tab"
+              aria-selected="false"
+              aria-controls="experiment-panel"
+              tabindex="-1"
+              data-mode="1"
+            >
+              <span>02</span> The qubit
+              <span class="tab-mark" aria-hidden="true">↗</span>
+            </button>
+            <button
+              id="tab-measure"
+              role="tab"
+              aria-selected="false"
+              aria-controls="experiment-panel"
+              tabindex="-1"
+              data-mode="2"
+            >
+              <span>03</span> Measurement
+              <span class="tab-mark" aria-hidden="true">↗</span>
+            </button>
+          </div>
+          <div
+            class="lab-body"
+            id="experiment-panel"
+            role="tabpanel"
+            aria-labelledby="tab-wave"
+          >
+            <div class="viewport" id="viewport">
+              <canvas
+                id="quantum-canvas"
+                aria-label="Interactive quantum visualization. Use the adjacent controls to change the state."
+                tabindex="0"
+              ></canvas>
+              <div class="canvas-top">
+                <span class="mono" id="scene-label"
+                  >FIG. 01 — A FIELD OF POSSIBILITIES</span
+                ><button
+                  class="icon-button"
+                  id="pause"
+                  aria-label="Pause animation"
+                  aria-pressed="false"
+                >
+                  Ⅱ
+                </button>
+              </div>
+              <div class="canvas-caption">
+                <span class="mini-dot blue"></span
+                ><span id="scene-legend"
+                  >Height = real amplitude · brightness = intensity</span
+                >
+              </div>
+              <div
+                class="canvas-equation"
+                id="canvas-equation"
+                aria-hidden="true"
+              >
+                ψ = αψ₀ + βψ₁
+              </div>
+              <div class="canvas-bottom">
+                <span class="mono" id="renderer-status"
+                  >Preparing the field</span
+                ><span class="mono" id="interaction-hint"
+                  >DRAG TO ROTATE ↔</span
+                >
+              </div>
+              <div class="sphere-label pole-zero" hidden>|0⟩</div>
+              <div class="sphere-label pole-one" hidden>|1⟩</div>
+              <div class="measurement-display" id="measurement-display" hidden>
+                <span class="eyebrow">Measurements of fresh copies</span>
+                <div class="shot-heading">
+                  <strong id="shot-count">0</strong
+                  ><span>shots<br />collected</span>
+                </div>
+                <div class="shot-grid" id="shot-grid" aria-hidden="true"></div>
+                <div class="histogram">
+                  <div class="histogram-row">
+                    <span id="outcome-zero">|0⟩</span>
+                    <div class="histogram-track"><div id="bar-zero"></div></div>
+                    <output id="count-zero">0</output>
+                  </div>
+                  <div class="histogram-row">
+                    <span id="outcome-one">|1⟩</span>
+                    <div class="histogram-track"><div id="bar-one"></div></div>
+                    <output id="count-one">0</output>
+                  </div>
+                </div>
+                <p class="measurement-note">
+                  Each dot is one independently prepared qubit.<br />The pattern
+                  emerges over many measurements.
+                </p>
+              </div>
+            </div>
+            <aside class="controls" aria-label="Experiment controls">
+              <div class="control-heading">
+                <span class="eyebrow" id="experiment-number">Experiment 1</span
+                ><span
+                  class="control-symbol"
+                  aria-hidden="true"
+                  id="control-symbol"
+                  >∿</span
+                >
+              </div>
+              <h3 id="experiment-title">Possibilities<br />make waves.</h3>
+              <p id="experiment-description">
+                Two amplitudes overlap. Where they agree, they reinforce. Where
+                they oppose, they cancel. Change the phase to see it happen.
+              </p>
+              <div class="slider-control">
+                <div class="control-label">
+                  <label for="balance">State balance</label
+                  ><output id="balance-value" for="balance">50 / 50</output>
+                </div>
+                <input
+                  type="range"
+                  id="balance"
+                  min="0"
+                  max="100"
+                  value="50"
+                  step="1"
+                />
+                <div class="range-ends">
+                  <span>100% |0⟩</span><span>100% |1⟩</span>
+                </div>
+              </div>
+              <div class="slider-control">
+                <div class="control-label">
+                  <label for="phase"
+                    >Relative phase <span class="muted">φ</span></label
+                  ><output id="phase-value" for="phase">0°</output>
+                </div>
+                <input
+                  type="range"
+                  id="phase"
+                  min="0"
+                  max="360"
+                  value="0"
+                  step="1"
+                />
+                <div class="range-ends">
+                  <span>0</span><span>π</span><span>2π</span>
+                </div>
+              </div>
+              <div class="state-readout">
+                <span class="eyebrow" id="state-label">Prepared state</span
+                ><output id="state-formula" aria-label="Prepared state formula"
+                  >0.707 |0⟩ + 0.707 |1⟩</output
+                >
+              </div>
+              <div class="wave-controls" id="wave-controls">
+                <button class="primary-button" id="flip-phase">
+                  Shift phase by π <span aria-hidden="true">↔</span>
+                </button>
+                <p class="control-tip">
+                  Try this: shift the phase and watch bright bands trade places
+                  with dark ones.
+                </p>
+              </div>
+              <div id="bloch-controls" hidden>
+                <div
+                  class="preset-buttons"
+                  aria-label="Prepare a quantum state"
+                >
+                  <button data-preset="zero">|0⟩</button
+                  ><button data-preset="plus">|+⟩</button
+                  ><button data-preset="minus">|−⟩</button
+                  ><button data-preset="one">|1⟩</button>
+                </div>
+                <p class="control-tip">
+                  A point on this sphere represents one pure qubit state. Its
+                  direction encodes balance and phase.
+                </p>
+              </div>
+              <div id="measure-controls" hidden>
+                <div class="control-label">
+                  <label for="basis">Measurement basis</label
+                  ><select id="basis">
+                    <option value="z">Z · zero / one</option>
+                    <option value="x">X · plus / minus</option>
+                  </select>
+                </div>
+                <p class="expected" id="expected">
+                  Expected: 50% |0⟩ · 50% |1⟩
+                </p>
+                <button class="primary-button" id="run-shots">
+                  Run 128 measurements <span aria-hidden="true">↗</span>
+                </button>
+                <div class="measure-actions">
+                  <button id="measure-one">Measure this qubit</button
+                  ><button id="prepare">Prepare again</button>
+                </div>
+                <p
+                  class="control-tip"
+                  id="measurement-result"
+                  role="status"
+                  aria-live="polite"
+                >
+                  Measure one qubit to collapse its state. Measure it again in
+                  the same basis to get the same result.
+                </p>
+              </div>
+              <button class="reset-button" id="reset">
+                ↺ &nbsp; Reset experiment
+              </button>
+            </aside>
+          </div>
+          <div class="lab-footnote">
+            <span>Your curiosity is the only prerequisite.</span
+            ><span class="mono">An illustrated model of quantum behavior</span>
+          </div>
+        </div>
+        <div class="experiment-summary">
+          <span class="eyebrow">What you’re seeing</span>
+          <p id="experiment-explanation">
+            A stylized surface of two coherent wave amplitudes. The height shows
+            their real sum; brighter points mark greater intensity, |ψ|². These
+            points sample a field — they aren’t individual particles.
+          </p>
+        </div>
+      </section>
+
+      <section class="idea wrap" id="idea" aria-labelledby="idea-title">
+        <div class="section-label">
+          <h2>The idea</h2>
+          <span class="mono">Strange doesn’t have to mean complicated.</span>
+        </div>
+        <div class="idea-intro">
+          <h2 id="idea-title">
+            One state.<br /><span>More than one possibility.</span>
+          </h2>
+          <p>
+            A classical bit is 0 or 1. A qubit can be a combination of both
+            basis states, described by amplitudes. The interesting part is what
+            those amplitudes can do together.
+          </p>
+        </div>
+        <div class="idea-grid">
+          <article>
+            <div class="card-diagram wave-diagram" aria-hidden="true">
+              <span>∿</span><span>∿</span><span>∿</span>
+            </div>
+            <span class="eyebrow">1. Combine</span>
+            <h3>Possibility has a phase.</h3>
+            <p>
+              Amplitudes have a size and a phase. Add them before you square
+              their magnitude to get a probability. That’s where interference
+              comes from.
+            </p>
+            <button class="card-link" data-jump="0">
+              Explore interference <span aria-hidden="true">↗</span>
+            </button>
+          </article>
+          <article>
+            <div class="card-diagram sphere-diagram" aria-hidden="true">
+              <div></div>
+              <span>ψ</span>
+            </div>
+            <span class="eyebrow">2. Transform</span>
+            <h3>There’s room between 0 and 1.</h3>
+            <p>
+              The Bloch sphere maps a pure qubit’s state to a point. The poles
+              are |0⟩ and |1⟩. The equator holds equal-weight superpositions
+              with different phases.
+            </p>
+            <button class="card-link" data-jump="1">
+              Meet the qubit <span aria-hidden="true">↗</span>
+            </button>
+          </article>
+          <article>
+            <div class="card-diagram dots-diagram" aria-hidden="true">
+              ● ● ○ ● ○ ●<br />○ ● ● ○ ● ○<br />● ○ ○ ● ○ ●
+            </div>
+            <span class="eyebrow">3. Measure</span>
+            <h3>One result. A bigger pattern.</h3>
+            <p>
+              A measurement yields one outcome in the chosen basis. Repeat with
+              freshly prepared copies, and the frequencies approach the
+              probabilities predicted by the state.
+            </p>
+            <button class="card-link" data-jump="2">
+              Make a measurement <span aria-hidden="true">↗</span>
+            </button>
+          </article>
+        </div>
+      </section>
+
+      <section
+        class="formula-section wrap"
+        aria-label="The superposition equation"
+      >
+        <p class="eyebrow">The small equation behind it all</p>
+        <div class="big-equation">|ψ⟩ = <span>α</span>|0⟩ + <em>β</em>|1⟩</div>
+        <p>
+          Two complex amplitudes. One normalized state.<br /><span class="mono"
+            >|α|² + |β|² = 1</span
+          >
+        </p>
+      </section>
+
+      <section class="notes wrap" aria-labelledby="notes-title">
+        <div>
+          <p class="eyebrow">A few useful footnotes</p>
+          <h2 id="notes-title">Stay curious.<br />Keep it quantum.</h2>
+        </div>
+        <div class="questions">
+          <details>
+            <summary>
+              Is this just a coin we haven’t looked at?<span aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <p>
+              No. An ordinary unknown coin can be modeled as a mixture of
+              alternatives. A coherent superposition also has a relative phase,
+              which changes interference and measurements in other bases. Try
+              |+⟩ and |−⟩: they have identical Z probabilities but opposite,
+              certain outcomes in X.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Does looking at it make it collapse?<span aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <p>
+              In this lab, measurement means an ideal projective interaction in
+              a chosen basis. It doesn’t require a conscious observer. After
+              measuring, the state becomes the corresponding basis state.
+              Measuring it immediately again in the same basis gives the same
+              outcome.
+            </p>
+          </details>
+          <details>
+            <summary>
+              What is this simulation simplifying?<span aria-hidden="true"
+                >+</span
+              >
+            </summary>
+            <p>
+              The qubit and measurement calculations use the single-qubit Born
+              rule. The wave field is a stylized two-mode interference
+              illustration with dimensionless coordinates; it is not a full
+              spatial Schrödinger solver or a particle trajectory. We omit
+              noise, decoherence, and interactions with other qubits. Random
+              outcomes come from your browser, not quantum hardware.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Where can I go deeper?<span aria-hidden="true">+</span>
+            </summary>
+            <p>
+              Start with
+              <a
+                href="https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
+                target="_blank"
+                rel="noopener noreferrer"
+                >IBM’s introduction to quantum information ↗</a
+              >. For the graphics, explore the
+              <a
+                href="https://vgpu.sh/examples"
+                target="_blank"
+                rel="noopener noreferrer"
+                >vgpu example gallery ↗</a
+              >. This site adapts techniques from Simple Gradient, Particles
+              ocean, and Particle Orbit.
+            </p>
+          </details>
+        </div>
+      </section>
+    </main>
+    <footer class="wrap">
+      <a class="wordmark" href="#"
+        ><span class="brand-symbol">ψ</span> superposition<span
+          class="brand-dot"
+          >.</span
+        ></a
+      >
+      <p>A small playground for a very strange universe.</p>
+      <a
+        href="https://vgpu.sh/docs/cli"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Made with vgpu <span aria-hidden="true">↗</span></a
+      >
+    </footer>
+    <noscript
+      ><p class="noscript">
+        Enable JavaScript to use the interactive experiments. The field guide
+        below is still available to read.
+      </p></noscript
+    >
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
