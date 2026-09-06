@@ -7,6 +7,9 @@ The site uses [vgpu 0.4.0](https://vgpu.sh/docs/cli), published under the MIT li
 | [Simple Gradient](https://vgpu.sh/examples/gradient) | Canvas surface, fullscreen fragment effect, explicit frame lifecycle, and cleanup. |
 | [Particles ocean](https://vgpu.sh/examples/fft-ocean) | Instance-indexed field grid, six-vertex particle billboards, screen-sized points, and additive rendering. The ocean's FFT and fluid physics are not used. |
 | [Particle Orbit](https://vgpu.sh/examples/particle-orbit) | Soft particle falloff, luminous color, responsive canvas sizing, and interactive camera input. Its TypeGPU simulation and radiance-cascade pipeline are not used. |
+| [Clipping](https://vgpu.sh/examples/clipping) | A local-coordinate plane test clips the sphere and a disk with radius √(1 − z²) shows its section. This site uses point sprites for the geometry. Clipping is a view operation, not a quantum measurement. |
+
+The gallery uses six vgpu surfaces with independent bindings on one GPU device. The complex-amplitude entry adds a phase-color fragment shader; the measurement preview encodes exact default-state Z probabilities as bar heights. The measurement viewer displays actual sampled outcomes separately. Static gallery images are generated from the same pipeline as the live previews.
 
 The quantum equations, explanatory content, site design, controls, and fallback renderer were authored for this site. It is not an official vgpu or IBM project.
 

@@ -5,6 +5,7 @@ import vm from "node:vm";
 import { webcrypto } from "node:crypto";
 import { parseHTML } from "linkedom";
 import * as quantum from "../src/quantum.js";
+import * as models from "../src/catalog.js";
 
 test("experiment controls connect preparation, measurement, reset, and accessible tabs", async () => {
   const { document, window } = parseHTML(
@@ -20,6 +21,7 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
     Uint32Array,
     crypto: webcrypto,
     ...quantum,
+    ...models,
     matchMedia: () => ({ matches: true, addEventListener() {} }),
     createRenderer: async (_canvas, _state, status) => {
       status("Test renderer");
@@ -31,7 +33,7 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
   const source = (
     await fs.readFile(new URL("../src/main.js", import.meta.url), "utf8")
   )
-    .replace(/^import .*;\r?\n/gm, "")
+    .replace(/^import\s+[\s\S]*?;\r?\n/gm, "")
     .replace(/^if\s*\(import\.meta\.hot\).*$/gm, "");
   await vm.runInContext(`(async()=>{${source}\n})()`, context);
   const click = (selector) =>
@@ -43,6 +45,7 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
   const text = (selector) => $(selector).textContent;
   assert.equal($("#tab-wave").getAttribute("aria-selected"), "true");
   assert.equal($("#pause").getAttribute("aria-pressed"), "true");
+  assert.equal(document.querySelectorAll(".gallery-card").length, 6);
   click("#tab-measure");
   assert.equal($("#measurement-display").hidden, false);
   assert.equal(
@@ -80,7 +83,25 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
   const key = new window.Event("keydown");
   key.key = "ArrowRight";
   $("#tab-bloch").dispatchEvent(key);
-  assert.equal($("#tab-measure").getAttribute("aria-selected"), "true");
+  assert.equal($("#tab-dephase").getAttribute("aria-selected"), "true");
+  assert.equal($("#dephase-controls").hidden, false);
+  change("#coherence", "0");
+  assert.match(text("#purity-value"), /1\.000/);
+  change("#balance", "50");
+  assert.match(text("#purity-value"), /0\.500/);
+  click("#tab-section");
+  assert.equal($("#phase-control").hidden, true);
+  change("#balance", "0");
+  assert.match(text("#section-value"), /radius = 0\.000/);
+  click("#tab-complex");
+  assert.equal($("#phase-control").hidden, false);
+  assert.match(text("#model-boundary"), /phase encoding/);
+  assert.equal(
+    $("#model-source").getAttribute("href"),
+    "https://vgpu.sh/examples/gradient",
+  );
+  click("#gallery-motion");
+  assert.equal($("#gallery-motion").getAttribute("aria-pressed"), "false");
   click("#pause");
   assert.equal($("#pause").getAttribute("aria-pressed"), "false");
 });

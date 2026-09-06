@@ -6,22 +6,19 @@
     <meta name="theme-color" content="#f3efe6" />
     <meta
       name="description"
-      content="A small playground for a very strange universe. Explore quantum superposition through interactive wave interference, a Bloch sphere, and measurement experiments."
+      content="Six interactive vgpu visualizations of quantum amplitudes, qubit state space, dephasing, and measurement, with explicit model boundaries."
     />
-    <meta
-      property="og:title"
-      content="Superposition — A playground for possibility"
-    />
+    <meta property="og:title" content="Quantum superposition — vgpu gallery" />
     <meta
       property="og:description"
-      content="Make waves. Change a quantum state. See what happens when you measure. Three interactive experiments, one beautifully strange idea."
+      content="Six interactive vgpu visualizations of quantum amplitudes, qubit state space, dephasing, and measurement, with explicit model boundaries."
     />
     <meta property="og:type" content="website" />
     <meta name="color-scheme" content="light" />
-    <title>Superposition — A playground for possibility</title>
+    <title>Quantum superposition — vgpu gallery</title>
   </head>
   <body>
-    <a class="skip-link" href="#experiments">Skip to experiments</a>
+    <a class="skip-link" href="#gallery">Skip to gallery</a>
     <header class="site-header wrap">
       <a class="wordmark" href="#" aria-label="Superposition home"
         ><span class="brand-symbol">ψ</span> superposition<span
@@ -30,42 +27,248 @@
         ></a
       >
       <nav aria-label="Main navigation">
-        <a href="#experiments">The playground</a><a href="#idea">The idea</a
+        <a href="#gallery">Gallery</a
+        ><a href="#boundaries">Concept boundaries</a
         ><a
           href="https://github.com/superposition/quantum-superposition"
           target="_blank"
           rel="noopener noreferrer"
-          >Source <span aria-hidden="true">↗</span></a
+          >Source ↗</a
         >
       </nav>
-      <span class="header-note">An illustrated field guide to possibility</span>
+      <span class="header-note">Quantum models / vgpu</span>
     </header>
     <main>
       <section class="hero wrap" aria-labelledby="hero-title">
         <div class="hero-top">
-          <p class="eyebrow">Physics, with room to play.</p>
-          <span class="edition mono">No. 1 — Notes on the quantum world</span>
+          <p class="eyebrow">Interactive graphics</p>
+          <span class="edition">6 models</span>
         </div>
-        <h1 id="hero-title">
-          A little uncertain.<br /><span>A lot of possibility.</span>
-        </h1>
+        <h1 id="hero-title">Quantum superposition</h1>
         <div class="hero-bottom">
           <p>
-            Before a measurement, a quantum state can hold<br
-              class="desktop-break"
-            />
-            more than one possibility. Let’s play with that.
+            Amplitudes, state space, and measurement.<br />Each visualization
+            defines its coordinates, assumptions, and conceptual limits.
           </p>
-          <a class="text-link" href="#experiments"
-            >Enter the playground <span aria-hidden="true">↘</span></a
+          <a class="text-link" href="#boundaries"
+            >Concept boundaries <span aria-hidden="true">↓</span></a
           >
         </div>
       </section>
 
+      <section
+        aria-labelledby="gallery-title"
+        id="gallery"
+        class="gallery wrap"
+      >
+        <div class="section-label">
+          <h2 id="gallery-title">Gallery</h2>
+          <div class="gallery-toolbar">
+            <span id="gallery-status">Rendered model previews</span
+            ><button id="gallery-motion" aria-pressed="false">
+              Pause previews
+            </button>
+          </div>
+        </div>
+        <div class="gallery-grid">
+          <article class="gallery-card" data-card-mode="0">
+            <button
+              class="gallery-open"
+              data-jump="0"
+              aria-label="Open Wave interference"
+            >
+              <span class="gallery-visual"
+                ><img
+                  src="./gallery/wave.png"
+                  alt=""
+                  width="600"
+                  height="380"
+                /><canvas data-preview-mode="0" aria-hidden="true"></canvas
+                ><span class="gallery-number">01</span></span
+              ><span class="gallery-card-heading"
+                ><span>Wave interference</span
+                ><span aria-hidden="true">↗</span></span
+              >
+            </button>
+            <div class="gallery-card-copy">
+              <p class="gallery-category">Amplitude fields</p>
+              <p>Two coherent modes have complex amplitudes.</p>
+              <a
+                href="https://vgpu.sh/examples/fft-ocean"
+                target="_blank"
+                rel="noopener noreferrer"
+                >vgpu / Particles ocean ↗</a
+              >
+            </div>
+          </article>
+          <article class="gallery-card" data-card-mode="3">
+            <button
+              class="gallery-open"
+              data-jump="3"
+              aria-label="Open Complex amplitude"
+            >
+              <span class="gallery-visual"
+                ><img
+                  src="./gallery/complex.png"
+                  alt=""
+                  width="600"
+                  height="380"
+                /><canvas data-preview-mode="3" aria-hidden="true"></canvas
+                ><span class="gallery-number">02</span></span
+              ><span class="gallery-card-heading"
+                ><span>Complex amplitude</span
+                ><span aria-hidden="true">↗</span></span
+              >
+            </button>
+            <div class="gallery-card-copy">
+              <p class="gallery-category">Amplitude fields</p>
+              <p>A complex amplitude has magnitude and phase.</p>
+              <a
+                href="https://vgpu.sh/examples/gradient"
+                target="_blank"
+                rel="noopener noreferrer"
+                >vgpu / Simple Gradient ↗</a
+              >
+            </div>
+          </article>
+          <article class="gallery-card" data-card-mode="1">
+            <button
+              class="gallery-open"
+              data-jump="1"
+              aria-label="Open Pure qubit states"
+            >
+              <span class="gallery-visual"
+                ><img
+                  src="./gallery/bloch.png"
+                  alt=""
+                  width="600"
+                  height="380"
+                /><canvas data-preview-mode="1" aria-hidden="true"></canvas
+                ><span class="gallery-number">03</span></span
+              ><span class="gallery-card-heading"
+                ><span>Pure qubit states</span
+                ><span aria-hidden="true">↗</span></span
+              >
+            </button>
+            <div class="gallery-card-copy">
+              <p class="gallery-category">State space</p>
+              <p>A pure qubit corresponds to a unit Bloch vector.</p>
+              <a
+                href="https://vgpu.sh/examples/particle-orbit"
+                target="_blank"
+                rel="noopener noreferrer"
+                >vgpu / Particle Orbit ↗</a
+              >
+            </div>
+          </article>
+          <article class="gallery-card" data-card-mode="4">
+            <button
+              class="gallery-open"
+              data-jump="4"
+              aria-label="Open Pure and mixed states"
+            >
+              <span class="gallery-visual"
+                ><img
+                  src="./gallery/dephase.png"
+                  alt=""
+                  width="600"
+                  height="380"
+                /><canvas data-preview-mode="4" aria-hidden="true"></canvas
+                ><span class="gallery-number">04</span></span
+              ><span class="gallery-card-heading"
+                ><span>Pure and mixed states</span
+                ><span aria-hidden="true">↗</span></span
+              >
+            </button>
+            <div class="gallery-card-copy">
+              <p class="gallery-category">State space</p>
+              <p>
+                A phase-damping channel scales the off-diagonal density-matrix
+                entries by λ.
+              </p>
+              <a
+                href="https://vgpu.sh/examples/particle-orbit"
+                target="_blank"
+                rel="noopener noreferrer"
+                >vgpu / Particle Orbit ↗</a
+              >
+            </div>
+          </article>
+          <article class="gallery-card" data-card-mode="5">
+            <button
+              class="gallery-open"
+              data-jump="5"
+              aria-label="Open Constant-probability sections"
+            >
+              <span class="gallery-visual"
+                ><img
+                  src="./gallery/section.png"
+                  alt=""
+                  width="600"
+                  height="380"
+                /><canvas data-preview-mode="5" aria-hidden="true"></canvas
+                ><span class="gallery-number">05</span></span
+              ><span class="gallery-card-heading"
+                ><span>Constant-probability sections</span
+                ><span aria-hidden="true">↗</span></span
+              >
+            </button>
+            <div class="gallery-card-copy">
+              <p class="gallery-category">State space</p>
+              <p>
+                A plane at fixed Bloch z contains all single-qubit states with
+                the same Z-basis probabilities.
+              </p>
+              <a
+                href="https://vgpu.sh/examples/clipping"
+                target="_blank"
+                rel="noopener noreferrer"
+                >vgpu / Clipping ↗</a
+              >
+            </div>
+          </article>
+          <article class="gallery-card" data-card-mode="2">
+            <button
+              class="gallery-open"
+              data-jump="2"
+              aria-label="Open Measurement statistics"
+            >
+              <span class="gallery-visual"
+                ><img
+                  src="./gallery/measure.png"
+                  alt=""
+                  width="600"
+                  height="380"
+                /><canvas data-preview-mode="2" aria-hidden="true"></canvas
+                ><span class="gallery-number">06</span
+                ><span class="preview-note"
+                  >Z basis: P(0) = P(1) = 0.5</span
+                ></span
+              ><span class="gallery-card-heading"
+                ><span>Measurement statistics</span
+                ><span aria-hidden="true">↗</span></span
+              >
+            </button>
+            <div class="gallery-card-copy">
+              <p class="gallery-category">Measurement</p>
+              <p>
+                Projective measurements sample the Born probabilities in a
+                selected basis.
+              </p>
+              <a
+                href="https://vgpu.sh/examples/gradient"
+                target="_blank"
+                rel="noopener noreferrer"
+                >vgpu / Simple Gradient ↗</a
+              >
+            </div>
+          </article>
+        </div>
+      </section>
       <section class="lab wrap" id="experiments" aria-labelledby="lab-title">
         <div class="section-label">
-          <h2 id="lab-title">The playground</h2>
-          <span class="mono">Three experiments. One idea.</span>
+          <h2 id="lab-title">Model viewer</h2>
+          <span class="mono">Shared preparation controls</span>
         </div>
         <div class="lab-shell">
           <div class="lab-tabs" role="tablist" aria-label="Quantum experiments">
@@ -74,12 +277,20 @@
               role="tab"
               aria-selected="true"
               aria-controls="experiment-panel"
+              tabindex="0"
               data-mode="0"
             >
-              <span>01</span> Wave interference
-              <span class="tab-mark" aria-hidden="true">↗</span>
-            </button>
-            <button
+              Wave interference</button
+            ><button
+              id="tab-complex"
+              role="tab"
+              aria-selected="false"
+              aria-controls="experiment-panel"
+              tabindex="-1"
+              data-mode="3"
+            >
+              Complex amplitude</button
+            ><button
               id="tab-bloch"
               role="tab"
               aria-selected="false"
@@ -87,10 +298,26 @@
               tabindex="-1"
               data-mode="1"
             >
-              <span>02</span> The qubit
-              <span class="tab-mark" aria-hidden="true">↗</span>
-            </button>
-            <button
+              Pure qubit states</button
+            ><button
+              id="tab-dephase"
+              role="tab"
+              aria-selected="false"
+              aria-controls="experiment-panel"
+              tabindex="-1"
+              data-mode="4"
+            >
+              Pure and mixed states</button
+            ><button
+              id="tab-section"
+              role="tab"
+              aria-selected="false"
+              aria-controls="experiment-panel"
+              tabindex="-1"
+              data-mode="5"
+            >
+              Constant-probability sections</button
+            ><button
               id="tab-measure"
               role="tab"
               aria-selected="false"
@@ -98,8 +325,7 @@
               tabindex="-1"
               data-mode="2"
             >
-              <span>03</span> Measurement
-              <span class="tab-mark" aria-hidden="true">↗</span>
+              Measurement statistics
             </button>
           </div>
           <div
@@ -115,8 +341,7 @@
                 tabindex="0"
               ></canvas>
               <div class="canvas-top">
-                <span class="mono" id="scene-label"
-                  >FIG. 01 — A FIELD OF POSSIBILITIES</span
+                <span class="mono" id="scene-label">Wave interference</span
                 ><button
                   class="icon-button"
                   id="pause"
@@ -142,9 +367,7 @@
               <div class="canvas-bottom">
                 <span class="mono" id="renderer-status"
                   >Preparing the field</span
-                ><span class="mono" id="interaction-hint"
-                  >DRAG TO ROTATE ↔</span
-                >
+                ><span class="mono" id="interaction-hint">Drag to rotate</span>
               </div>
               <div class="sphere-label pole-zero" hidden>|0⟩</div>
               <div class="sphere-label pole-one" hidden>|1⟩</div>
@@ -168,8 +391,8 @@
                   </div>
                 </div>
                 <p class="measurement-note">
-                  Each dot is one independently prepared qubit.<br />The pattern
-                  emerges over many measurements.
+                  Each dot records one measurement of an independently prepared
+                  qubit.
                 </p>
               </div>
             </div>
@@ -183,12 +406,13 @@
                   >∿</span
                 >
               </div>
-              <h3 id="experiment-title">Possibilities<br />make waves.</h3>
+              <h3 id="experiment-title">Wave interference</h3>
               <p id="experiment-description">
-                Two amplitudes overlap. Where they agree, they reinforce. Where
-                they oppose, they cancel. Change the phase to see it happen.
+                Two coherent modes have complex amplitudes. Their sum determines
+                the interference intensity. Relative phase shifts the
+                interference fringes.
               </p>
-              <div class="slider-control">
+              <div id="balance-control" class="slider-control">
                 <div class="control-label">
                   <label for="balance">State balance</label
                   ><output id="balance-value" for="balance">50 / 50</output>
@@ -205,7 +429,7 @@
                   <span>100% |0⟩</span><span>100% |1⟩</span>
                 </div>
               </div>
-              <div class="slider-control">
+              <div id="phase-control" class="slider-control">
                 <div class="control-label">
                   <label for="phase"
                     >Relative phase <span class="muted">φ</span></label
@@ -223,8 +447,8 @@
                   <span>0</span><span>π</span><span>2π</span>
                 </div>
               </div>
-              <div class="state-readout">
-                <span class="eyebrow" id="state-label">Prepared state</span
+              <div id="preparation-readout" class="state-readout">
+                <span class="eyebrow" id="state-label">Input pure state</span
                 ><output id="state-formula" aria-label="Prepared state formula"
                   >0.707 |0⟩ + 0.707 |1⟩</output
                 >
@@ -234,8 +458,8 @@
                   Shift phase by π <span aria-hidden="true">↔</span>
                 </button>
                 <p class="control-tip">
-                  Try this: shift the phase and watch bright bands trade places
-                  with dark ones.
+                  A π shift exchanges the constructive and destructive fringes
+                  of the equal-weight field.
                 </p>
               </div>
               <div id="bloch-controls" hidden>
@@ -281,174 +505,225 @@
                   the same basis to get the same result.
                 </p>
               </div>
-              <button class="reset-button" id="reset">
-                ↺ &nbsp; Reset experiment
+              <div id="additional-controls">
+                <div id="dephase-controls" hidden>
+                  <div class="slider-control">
+                    <div class="control-label">
+                      <label for="coherence">Coherence λ</label
+                      ><output id="coherence-value" for="coherence"
+                        >0.35</output
+                      >
+                    </div>
+                    <input
+                      type="range"
+                      id="coherence"
+                      min="0"
+                      max="100"
+                      value="35"
+                      step="1"
+                    />
+                    <div class="range-ends">
+                      <span>Dephased</span><span>Coherent</span>
+                    </div>
+                  </div>
+                  <p class="derived-value" id="purity-value"></p>
+                  <p class="control-tip">
+                    ρ₀₁ → λρ₀₁. Diagonal populations remain fixed.
+                  </p>
+                </div>
+                <div id="section-controls" hidden>
+                  <p class="derived-value" id="section-value"></p>
+                  <p class="control-tip">
+                    The plane selects states with equal Z-basis populations. The
+                    disk interior represents mixed states.
+                  </p>
+                </div>
+                <div hidden id="complex-controls">
+                  <div
+                    class="phase-key"
+                    aria-label="Cyclic color key from negative pi to positive pi"
+                    style="
+                      background: linear-gradient(
+                        to right,
+                        rgb(38, 192, 190) 0%,
+                        rgb(68, 239, 113) 12.5%,
+                        rgb(140, 228, 51) 25%,
+                        rgb(212, 166, 42) 37.5%,
+                        rgb(242, 89, 90) 50%,
+                        rgb(212, 42, 168) 62.5%,
+                        rgb(140, 52, 229) 75%,
+                        rgb(68, 114, 238) 87.5%,
+                        rgb(38, 192, 190) 100%
+                      );
+                    "
+                  ></div>
+                  <div class="phase-key-labels">
+                    <span>-pi</span><span>0</span><span>pi</span>
+                  </div>
+                  <p class="control-tip">
+                    Phase controls color. Intensity controls brightness. A
+                    common phase shift preserves intensity.
+                  </p>
+                </div>
+              </div>
+              <a
+                href="https://vgpu.sh/examples/fft-ocean"
+                rel="noopener noreferrer"
+                target="_blank"
+                class="model-source"
+                id="model-source"
+                >vgpu source / Particles ocean ↗</a
+              ><button class="reset-button" id="reset">
+                ↺ &#160; Reset experiment
               </button>
             </aside>
           </div>
           <div class="lab-footnote">
-            <span>Your curiosity is the only prerequisite.</span
-            ><span class="mono">An illustrated model of quantum behavior</span>
+            <span id="model-technique">Instanced particle field</span
+            ><a href="#boundaries">Concept boundaries ↓</a>
           </div>
         </div>
         <div class="experiment-summary">
-          <span class="eyebrow">What you’re seeing</span>
-          <p id="experiment-explanation">
-            A stylized surface of two coherent wave amplitudes. The height shows
-            their real sum; brighter points mark greater intensity, |ψ|². These
-            points sample a field — they aren’t individual particles.
-          </p>
-        </div>
-      </section>
-
-      <section class="idea wrap" id="idea" aria-labelledby="idea-title">
-        <div class="section-label">
-          <h2>The idea</h2>
-          <span class="mono">Strange doesn’t have to mean complicated.</span>
-        </div>
-        <div class="idea-intro">
-          <h2 id="idea-title">
-            One state.<br /><span>More than one possibility.</span>
-          </h2>
-          <p>
-            A classical bit is 0 or 1. A qubit can be a combination of both
-            basis states, described by amplitudes. The interesting part is what
-            those amplitudes can do together.
-          </p>
-        </div>
-        <div class="idea-grid">
-          <article>
-            <div class="card-diagram wave-diagram" aria-hidden="true">
-              <span>∿</span><span>∿</span><span>∿</span>
-            </div>
-            <span class="eyebrow">1. Combine</span>
-            <h3>Possibility has a phase.</h3>
-            <p>
-              Amplitudes have a size and a phase. Add them before you square
-              their magnitude to get a probability. That’s where interference
-              comes from.
-            </p>
-            <button class="card-link" data-jump="0">
-              Explore interference <span aria-hidden="true">↗</span>
-            </button>
-          </article>
-          <article>
-            <div class="card-diagram sphere-diagram" aria-hidden="true">
-              <div></div>
-              <span>ψ</span>
-            </div>
-            <span class="eyebrow">2. Transform</span>
-            <h3>There’s room between 0 and 1.</h3>
-            <p>
-              The Bloch sphere maps a pure qubit’s state to a point. The poles
-              are |0⟩ and |1⟩. The equator holds equal-weight superpositions
-              with different phases.
-            </p>
-            <button class="card-link" data-jump="1">
-              Meet the qubit <span aria-hidden="true">↗</span>
-            </button>
-          </article>
-          <article>
-            <div class="card-diagram dots-diagram" aria-hidden="true">
-              ● ● ○ ● ○ ●<br />○ ● ● ○ ● ○<br />● ○ ○ ● ○ ●
-            </div>
-            <span class="eyebrow">3. Measure</span>
-            <h3>One result. A bigger pattern.</h3>
-            <p>
-              A measurement yields one outcome in the chosen basis. Repeat with
-              freshly prepared copies, and the frequencies approach the
-              probabilities predicted by the state.
-            </p>
-            <button class="card-link" data-jump="2">
-              Make a measurement <span aria-hidden="true">↗</span>
-            </button>
-          </article>
+          <div>
+            <h3>Coordinates</h3>
+            <p id="model-coordinates"></p>
+          </div>
+          <div>
+            <h3>Visual encoding</h3>
+            <p id="experiment-explanation"></p>
+          </div>
+          <div>
+            <h3>Model boundary</h3>
+            <p id="model-boundary"></p>
+          </div>
         </div>
       </section>
 
       <section
-        class="formula-section wrap"
-        aria-label="The superposition equation"
+        aria-labelledby="boundaries-title"
+        id="boundaries"
+        class="boundaries wrap"
       >
-        <p class="eyebrow">The small equation behind it all</p>
-        <div class="big-equation">|ψ⟩ = <span>α</span>|0⟩ + <em>β</em>|1⟩</div>
-        <p>
-          Two complex amplitudes. One normalized state.<br /><span class="mono"
-            >|α|² + |β|² = 1</span
-          >
-        </p>
-      </section>
-
-      <section class="notes wrap" aria-labelledby="notes-title">
-        <div>
-          <p class="eyebrow">A few useful footnotes</p>
-          <h2 id="notes-title">Stay curious.<br />Keep it quantum.</h2>
+        <div class="section-label">
+          <h2 id="boundaries-title">Concept boundaries</h2>
+          <span class="mono">Definitions and scope</span>
         </div>
-        <div class="questions">
-          <details>
-            <summary>
-              Is this just a coin we haven’t looked at?<span aria-hidden="true"
-                >+</span
-              >
-            </summary>
+        <div class="boundary-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Concepts</th>
+                <th>Distinction</th>
+                <th>Related models</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Amplitude / probability</th>
+                <td>
+                  An amplitude is complex. A probability is real and
+                  nonnegative. For a normalized state and a chosen outcome k,
+                  P(k) = |⟨k|ψ⟩|².
+                </td>
+                <td>
+                  <a href="#experiments" data-jump="0">Interference</a
+                  ><a href="#experiments" data-jump="3">Complex amplitude</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Superposition / mixture</th>
+                <td>
+                  A coherent superposition retains relative phase. A diagonal
+                  mixture has no off-diagonal coherence in the selected basis.
+                  Equal populations alone do not determine a state.
+                </td>
+                <td>
+                  <a href="#experiments" data-jump="1">Pure states</a
+                  ><a href="#experiments" data-jump="4">Dephasing</a>
+                </td>
+              </tr>
+              <tr>
+                <th>State space / physical space</th>
+                <td>
+                  The Bloch ball represents single-qubit density matrices.
+                  Positions in this ball encode measurement statistics, not
+                  locations of a particle.
+                </td>
+                <td>
+                  <a href="#experiments" data-jump="5">Probability sections</a>
+                </td>
+              </tr>
+              <tr>
+                <th>Dephasing / recorded measurement</th>
+                <td>
+                  Dephasing reduces ensemble coherence without selecting an
+                  outcome. An ideal projective measurement conditioned on a
+                  recorded outcome updates one copy to the corresponding
+                  eigenstate.
+                </td>
+                <td>
+                  <a href="#experiments" data-jump="4">Dephasing</a
+                  ><a href="#experiments" data-jump="2">Measurement</a>
+                </td>
+              </tr>
+              <tr>
+                <th>One copy / ensemble</th>
+                <td>
+                  One shot records one outcome. Batch frequencies estimate Born
+                  probabilities from independent preparations. Repeated
+                  measurement of the same collapsed copy in the same basis is
+                  deterministic.
+                </td>
+                <td><a href="#experiments" data-jump="2">Measurement</a></td>
+              </tr>
+              <tr>
+                <th>Single qubit / entanglement</th>
+                <td>
+                  A single Bloch vector does not describe correlations between
+                  multiple systems. The models in this gallery do not simulate
+                  entanglement.
+                </td>
+                <td>Gallery-wide limit</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="model-scope">
+          <div>
+            <h3>State convention</h3>
+            <p class="scope-equation">|ψ⟩ = √(1 − p)|0⟩ + exp(iφ)√p |1⟩</p>
             <p>
-              No. An ordinary unknown coin can be modeled as a mixture of
-              alternatives. A coherent superposition also has a relative phase,
-              which changes interference and measurements in other bases. Try
-              |+⟩ and |−⟩: they have identical Z probabilities but opposite,
-              certain outcomes in X.
+              p = P(1) in the Z basis. Amplitudes are normalized. Global phase
+              does not affect probabilities.
             </p>
-          </details>
-          <details>
-            <summary>
-              Does looking at it make it collapse?<span aria-hidden="true"
-                >+</span
-              >
-            </summary>
+          </div>
+          <div>
+            <h3>Rendering and computation</h3>
             <p>
-              In this lab, measurement means an ideal projective interaction in
-              a chosen basis. It doesn’t require a conscious observer. After
-              measuring, the state becomes the corresponding basis state.
-              Measuring it immediately again in the same basis gives the same
-              outcome.
+              vgpu renders the field, phase map, and state-space geometry. The
+              graphics are classical computations. Spatial-field coordinates are
+              dimensionless; no full Schrödinger evolution is solved.
             </p>
-          </details>
-          <details>
-            <summary>
-              What is this simulation simplifying?<span aria-hidden="true"
-                >+</span
-              >
-            </summary>
-            <p>
-              The qubit and measurement calculations use the single-qubit Born
-              rule. The wave field is a stylized two-mode interference
-              illustration with dimensionless coordinates; it is not a full
-              spatial Schrödinger solver or a particle trajectory. We omit
-              noise, decoherence, and interactions with other qubits. Random
-              outcomes come from your browser, not quantum hardware.
-            </p>
-          </details>
-          <details>
-            <summary>
-              Where can I go deeper?<span aria-hidden="true">+</span>
-            </summary>
-            <p>
-              Start with
-              <a
-                href="https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
-                target="_blank"
-                rel="noopener noreferrer"
-                >IBM’s introduction to quantum information ↗</a
-              >. For the graphics, explore the
-              <a
-                href="https://vgpu.sh/examples"
-                target="_blank"
-                rel="noopener noreferrer"
-                >vgpu example gallery ↗</a
-              >. This site adapts techniques from Simple Gradient, Particles
-              ocean, and Particle Orbit.
-            </p>
-          </details>
+          </div>
+        </div>
+        <div class="references">
+          <h3>References</h3>
+          <a
+            href="https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
+            target="_blank"
+            rel="noopener noreferrer"
+            >IBM Quantum / state vectors and measurement ↗</a
+          ><a
+            href="https://vgpu.sh/examples"
+            target="_blank"
+            rel="noopener noreferrer"
+            >vgpu / example gallery ↗</a
+          ><a
+            href="https://github.com/superposition/quantum-superposition/blob/main/ATTRIBUTION.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Source mapping and licenses ↗</a
+          >
         </div>
       </section>
     </main>
@@ -459,7 +734,7 @@
           >.</span
         ></a
       >
-      <p>A small playground for a very strange universe.</p>
+      <p>Single-qubit models · vgpu 0.4.0</p>
       <a
         href="https://vgpu.sh/docs/cli"
         target="_blank"
@@ -469,8 +744,8 @@
     </footer>
     <noscript
       ><p class="noscript">
-        Enable JavaScript to use the interactive experiments. The field guide
-        below is still available to read.
+        Interactive controls require JavaScript. Gallery captions and model
+        definitions remain available.
       </p></noscript
     >
     <script type="module" src="/src/main.js"></script>

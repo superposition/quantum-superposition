@@ -1,6 +1,16 @@
 import "./style.css";
-import { clamp, TAU, measure, probabilityZero } from "./quantum.js";
+import "./gallery.css";
+import {
+  clamp,
+  TAU,
+  measure,
+  probabilityZero,
+  dephasedVector,
+  purity,
+  sectionRadius,
+} from "./quantum.js";
 import { createRenderer } from "./renderer.js";
+import { catalog, galleryOrder, isSphereMode } from "./catalog.js";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -13,48 +23,13 @@ const state = {
   yaw: 0.38,
   pitch: 0.62,
   paused: motion.matches,
+  previewPaused: motion.matches,
+  coherence: 0.35,
 };
 let collapsed = null;
 let shots = [];
 let basis = "z";
-const names = [
-  {
-    id: "wave",
-    title: "Possibilities <br />make waves.",
-    symbol: "∿",
-    label: "A field of possibilities",
-    equation: "ψ = αψ₀ + βψ₁",
-    legend: "Height = real amplitude · brightness = intensity",
-    description:
-      "Two amplitudes overlap. Where they agree, they reinforce. Where they oppose, they cancel. Change the phase to see it happen.",
-    explanation:
-      "A stylized surface of two coherent wave amplitudes. The height shows their real sum; brighter points mark greater intensity, |ψ|². These points sample a field — they aren’t individual particles.",
-  },
-  {
-    id: "bloch",
-    title: "One qubit. <br />Every direction.",
-    symbol: "ψ",
-    label: "The Bloch sphere",
-    equation: "|ψ⟩ = cos(θ/2)|0⟩ + eⁱᵠsin(θ/2)|1⟩",
-    legend: "Copper vector = your state · sphere = all pure states",
-    description:
-      "A qubit’s pure state is a point on a sphere. Change the balance to move between the poles. Change the phase to travel around them.",
-    explanation:
-      "The sphere is a map of pure qubit states, not physical space. The north and south poles are |0⟩ and |1⟩. Longitude encodes relative phase; latitude encodes the probabilities of a Z-basis measurement.",
-  },
-  {
-    id: "measure",
-    title: "Possibility. <br />Meet probability.",
-    symbol: "⟨",
-    label: "From amplitudes to outcomes",
-    equation: "P(outcome) = |amplitude|²",
-    legend: "Copper = first outcome · blue = second outcome",
-    description:
-      "One measurement gives one answer. Many fresh copies reveal a pattern. Switch the basis to discover why phase matters.",
-    explanation:
-      "The 128-shot experiment measures independently prepared copies of your chosen state. “Measure this qubit” instead collapses one copy; measuring that same copy again in the same basis repeats its outcome. All outcomes are sampled locally using the Born rule.",
-  },
-];
+const names = catalog;
 
 function random() {
   const value = new Uint32Array(1);
@@ -81,12 +56,22 @@ function updateState() {
   $("#phase").setAttribute("aria-valuetext", `${degrees} degrees`);
   const a = Math.sqrt(1 - state.p1).toFixed(3),
     b = Math.sqrt(state.p1).toFixed(3);
-  const phase = degrees === 0 || degrees === 360 ? "" : `eⁱ${degrees}° `;
+  const phase =
+    degrees === 0 || degrees === 360
+      ? ""
+      : `exp(i·${(state.phase / Math.PI).toFixed(2)}π) `;
   $("#state-formula").textContent = `${a}|0⟩ + ${b}${phase}|1⟩`;
   const p = probabilityZero(state.p1, state.phase, basis);
   const labels = outcomes();
   $("#expected").textContent =
     `Expected: ${(p * 100).toFixed(0)}% ${labels[0]} · ${((1 - p) * 100).toFixed(0)}% ${labels[1]}`;
+  $("#coherence").value = Math.round(state.coherence * 100);
+  $("#coherence").style.setProperty("--fill", `${state.coherence * 100}%`);
+  $("#coherence-value").textContent = state.coherence.toFixed(2);
+  $("#purity-value").textContent =
+    `Tr(ρ²) = ${purity(dephasedVector(state.p1, state.phase, state.coherence)).toFixed(3)}`;
+  $("#section-value").textContent =
+    `z = ${(1 - 2 * state.p1).toFixed(2)} · radius = ${sectionRadius(state.p1).toFixed(3)}`;
 }
 
 function updateShots() {
@@ -118,22 +103,29 @@ function clearMeasurements() {
     "Measure one qubit to collapse its state. Measure it again in the same basis to get the same result.";
 }
 function setMode(mode, focus = false) {
+  if (!names[mode]) return;
   state.mode = mode;
-  state.pitch = mode === 1 ? 0.18 : 0.62;
+  state.pitch = isSphereMode(mode) ? 0.18 : 0.62;
   state.yaw = 0.38;
   const info = names[mode];
-  $$(".lab-tabs [role=tab]").forEach((button, index) => {
-    button.setAttribute("aria-selected", String(index === mode));
-    button.tabIndex = index === mode ? 0 : -1;
-    if (focus && index === mode) button.focus();
+  $$(".lab-tabs [role=tab]").forEach((button) => {
+    const selected = Number(button.dataset.mode) === mode;
+    button.setAttribute("aria-selected", String(selected));
+    button.tabIndex = selected ? 0 : -1;
+    if (focus && selected) button.focus();
   });
   $("#experiment-panel").setAttribute("aria-labelledby", `tab-${info.id}`);
-  $("#experiment-number").textContent = `Experiment ${mode + 1}`;
-  $("#experiment-title").innerHTML = info.title;
-  $("#control-symbol").textContent = info.symbol;
+  $("#experiment-number").textContent = info.group;
+  $("#experiment-title").textContent = info.title;
+  $("#control-symbol").textContent = "";
   $("#experiment-description").textContent = info.description;
-  $("#experiment-explanation").textContent = info.explanation;
-  $("#scene-label").textContent = `Fig. ${mode + 1} — ${info.label}`;
+  $("#experiment-explanation").textContent = info.encoding;
+  $("#model-coordinates").textContent = info.coordinates;
+  $("#model-boundary").textContent = info.boundary;
+  $("#model-technique").textContent = info.technique;
+  $("#model-source").href = `https://vgpu.sh/examples/${info.source}`;
+  $("#model-source").textContent = `vgpu source / ${info.sourceTitle} ↗`;
+  $("#scene-label").textContent = info.title;
   $("#scene-legend").textContent = info.legend;
   $("#canvas-equation").textContent = info.equation;
   $("#viewport").dataset.mode = mode;
@@ -141,38 +133,56 @@ function setMode(mode, focus = false) {
     $(`#${name}-controls`).hidden = i !== mode;
   });
   $$(".sphere-label").forEach((label) => {
-    label.hidden = mode !== 1;
+    label.hidden = !isSphereMode(mode) || mode === 5;
+  });
+  $("#phase-control").hidden = mode === 5;
+  $("#preparation-readout").hidden = mode === 5;
+  $("#dephase-controls").hidden = mode !== 4;
+  $("#section-controls").hidden = mode !== 5;
+  $("#complex-controls").hidden = mode !== 3;
+  $$(".gallery-card").forEach((card) => {
+    card.dataset.selected = String(Number(card.dataset.cardMode) === mode);
   });
   $("#measurement-display").hidden = mode !== 2;
   $("#interaction-hint").textContent =
-    mode === 2 ? "128 independent preparations" : "Drag to rotate ↔";
+    mode === 2
+      ? "128 independent preparations"
+      : mode === 3
+        ? "Phase in color · intensity in brightness"
+        : "Drag to rotate ↔";
   $("#quantum-canvas").setAttribute(
     "aria-label",
-    `${info.label}. ${info.legend}. Drag horizontally or use the left and right arrow keys to rotate the view.`,
+    `${info.title}. ${info.legend}.${[2, 3].includes(mode) ? "" : " Drag horizontally or use the left and right arrow keys to rotate the view."}`,
   );
 }
 
 $$(".lab-tabs [role=tab]").forEach((button) => {
   button.addEventListener("click", () => setMode(Number(button.dataset.mode)));
   button.addEventListener("keydown", (event) => {
-    let mode = state.mode;
-    if (event.key === "ArrowRight") mode = (mode + 1) % 3;
-    else if (event.key === "ArrowLeft") mode = (mode + 2) % 3;
-    else if (event.key === "Home") mode = 0;
-    else if (event.key === "End") mode = 2;
+    let index = galleryOrder.indexOf(state.mode);
+    if (event.key === "ArrowRight") index = (index + 1) % galleryOrder.length;
+    else if (event.key === "ArrowLeft")
+      index = (index + galleryOrder.length - 1) % galleryOrder.length;
+    else if (event.key === "Home") index = 0;
+    else if (event.key === "End") index = galleryOrder.length - 1;
     else return;
     event.preventDefault();
-    setMode(mode, true);
+    setMode(galleryOrder[index], true);
   });
 });
 $$("[data-jump]").forEach((button) =>
-  button.addEventListener("click", () => {
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
     setMode(Number(button.dataset.jump), true);
     $("#experiments").scrollIntoView({
       behavior: motion.matches ? "instant" : "smooth",
     });
   }),
 );
+$("#coherence").addEventListener("input", (event) => {
+  state.coherence = Number(event.target.value) / 100;
+  updateState();
+});
 $("#balance").addEventListener("input", (event) => {
   state.p1 = Number(event.target.value) / 100;
   clearMeasurements();
@@ -244,14 +254,30 @@ $("#pause").addEventListener("click", () => {
 });
 motion.addEventListener("change", (event) => {
   state.paused = event.matches;
+  state.previewPaused = event.matches;
   updatePause();
+  updateGalleryPause();
+});
+function updateGalleryPause() {
+  $("#gallery-motion").textContent = state.previewPaused
+    ? "Play previews"
+    : "Pause previews";
+  $("#gallery-motion").setAttribute(
+    "aria-pressed",
+    String(state.previewPaused),
+  );
+}
+$("#gallery-motion").addEventListener("click", () => {
+  state.previewPaused = !state.previewPaused;
+  updateGalleryPause();
 });
 $("#reset").addEventListener("click", () => {
   state.p1 = 0.5;
   state.phase = 0;
   state.time = 0;
   state.yaw = 0.38;
-  state.pitch = state.mode === 1 ? 0.18 : 0.62;
+  state.pitch = isSphereMode(state.mode) ? 0.18 : 0.62;
+  state.coherence = 0.35;
   basis = "z";
   $("#basis").value = basis;
   clearMeasurements();
@@ -260,7 +286,7 @@ $("#reset").addEventListener("click", () => {
 let pointer = null;
 const viewport = $("#viewport");
 viewport.addEventListener("pointerdown", (event) => {
-  if (event.target.tagName !== "CANVAS" || state.mode === 2) return;
+  if (event.target.tagName !== "CANVAS" || [2, 3].includes(state.mode)) return;
   pointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
   event.target.setPointerCapture(event.pointerId);
 });
@@ -281,7 +307,7 @@ for (const name of ["pointerup", "pointercancel", "lostpointercapture"])
     pointer = null;
   });
 viewport.addEventListener("keydown", (event) => {
-  if (event.target.tagName !== "CANVAS" || state.mode === 2) return;
+  if (event.target.tagName !== "CANVAS" || [2, 3].includes(state.mode)) return;
   if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
     event.preventDefault();
     state.yaw += event.key === "ArrowRight" ? 0.1 : -0.1;
@@ -291,6 +317,7 @@ viewport.addEventListener("keydown", (event) => {
 updateState();
 updateShots();
 updatePause();
+updateGalleryPause();
 setMode(0);
 const renderer = await createRenderer($("#quantum-canvas"), state, (status) => {
   $("#renderer-status").textContent = status;

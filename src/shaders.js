@@ -1,4 +1,4 @@
-// Rendering patterns adapted from vgpu's gradient, fft-ocean, and particle-orbit
+// Rendering patterns adapted from vgpu's gradient, fft-ocean, particle-orbit, and clipping
 // examples. Quantum field equations and the Bloch mapping are site-specific.
 // See ATTRIBUTION.md for canonical sources and the inspected revision.
 export const backgroundShader = /* wgsl */ `
@@ -19,6 +19,7 @@ export const particleShader = /* wgsl */ `
 struct Params {
   time: f32, p1: f32, phase: f32, mode: f32,
   width: f32, height: f32, yaw: f32, pitch: f32,
+  coherence: f32, padding: f32,
 }
 @group(0) @binding(0) var<uniform> params: Params;
 const PI: f32 = 3.14159265359;
@@ -58,7 +59,7 @@ fn project(point: vec3f) -> vec3f {
     color = mix(color, vec3f(0.97,0.9,0.74), min(intensity*0.38,0.65));
     alpha = 0.018*env + intensity * 0.48;
     radius = 0.75 + min(intensity, 1.5)*0.72;
-  } else if (params.mode < 1.5) {
+  } else if (params.mode < 1.5 || params.mode > 3.5) {
     let equator = 2.0 * sqrt(params.p1 * (1.0 - params.p1));
     // Logical Bloch coordinates (x,y,z) map to world (x,z,-y), so |0> is up.
     let state = vec3f(equator*cos(params.phase), 1.0-2.0*params.p1, -equator*sin(params.phase));
@@ -70,12 +71,35 @@ fn project(point: vec3f) -> vec3f {
       alpha = select(0.014, 0.32, ring);
       radius = select(0.8,1.25,ring);
       color = mix(vec3f(0.48,0.7,0.8),vec3f(0.9,0.72,0.51), (point.y/1.75+1.0)*0.5);
+      if (params.mode > 4.5 && point.y > (1.0-2.0*params.p1)*1.75) { alpha = 0.0; }
     } else {
       let progress = min(1.0, f32(instance - 32000u) / 700.0);
       point = state * 1.75 * progress;
       color = vec3f(0.98, 0.72, 0.49);
       alpha = select(0.018, 0.035, progress >= 1.0);
       radius = select(1.7, 7.0, progress >= 1.0);
+      if (params.mode > 3.5 && params.mode < 4.5) {
+        // Pure reference and the dephased vector share the same population z.
+        if (instance < 32384u) {
+          point = state * 1.75 * min(1.0,f32(instance-32000u)/360.0);
+          color = vec3f(0.45,0.7,0.85); alpha = 0.04; radius = 1.1;
+        } else {
+          let v = vec3f(state.x*params.coherence,state.y,state.z*params.coherence);
+          let t = min(1.0,f32(instance-32384u)/340.0);
+          point = v * 1.75 * t;
+          alpha = 0.055; radius = select(1.8,7.0,t>=1.0);
+        }
+      }
+      if (params.mode > 4.5) {
+        let height = 1.0-2.0*params.p1;
+        let diskRadius = sqrt(max(0.0,1.0-height*height));
+        let i = f32(instance-32000u);
+        var angle = i * 2.399963;
+        var r = sqrt(min(1.0,i/639.0));
+        if (i >= 640.0) { r=1.0; angle=(i-640.0)/128.0*2.0*PI; }
+        point = vec3f(r*diskRadius*cos(angle),height,r*diskRadius*sin(angle))*1.75;
+        alpha = select(0.32,0.7,i>=640.0); radius=select(1.6,2.4,i>=640.0);
+      }
     }
   } else {
     let x = (f32(instance%256u)/255.0-0.5)*12.0;
@@ -114,5 +138,44 @@ export function uniforms(state, size) {
     height: size[1],
     yaw: state.yaw ?? 0.38,
     pitch: state.pitch ?? (state.mode === 1 ? 0.18 : 0.62),
+    coherence: state.coherence ?? 1,
+    padding: 0,
   };
 }
+
+export const phaseShader = /* wgsl */ `
+struct Params {
+  time: f32, p1: f32, phase: f32, mode: f32,
+  width: f32, height: f32, yaw: f32, pitch: f32,
+  coherence: f32, padding: f32,
+}
+@group(0) @binding(0) var<uniform> params: Params;
+const PI: f32 = 3.14159265359;
+@fragment fn fs_main(@location(0) uv: vec2f) -> @location(0) vec4f {
+  let base = vec3f(0.065,0.11,0.09);
+  if (params.mode < 2.5) {
+    // Gallery preview encodes exact Z probabilities as bar heights.
+    let left = uv.x < 0.5;
+    let probability = select(params.p1,1.0-params.p1,left);
+    let center = select(0.68,0.32,left);
+    let box = abs(uv.x-center)<0.095 && uv.y>0.8-probability*0.62 && uv.y<0.8;
+    let color = select(vec3f(0.39,0.62,0.72),vec3f(0.82,0.51,0.31),left);
+    return vec4f(select(base,color,box),1.0);
+  }
+  let x = (uv.x-0.5)*10.4;
+  let z = (uv.y-0.5)*7.4;
+  let envelope = exp(-(x*x*0.13+z*z*0.23));
+  let a = sqrt(1.0-params.p1); let b = sqrt(params.p1);
+  let p0=x*3.1+z*1.1-params.time;
+  let p1=-x*3.1+z*1.1+params.phase-params.time;
+  let real=envelope*(a*cos(p0)+b*cos(p1));
+  let imag=envelope*(a*sin(p0)+b*sin(p1));
+  let intensity=real*real+imag*imag;
+  // Cyclic phase palette; the amplitude-zero branch avoids atan2(0,0).
+  let phase=atan2(imag,real+1e-12);
+  let hue=vec3f(0.55)+vec3f(0.4)*cos(vec3f(phase)+vec3f(0.0,2.1,4.2));
+  let strength=pow(clamp(intensity*0.5,0.0,1.0),0.45);
+  let color=mix(base,hue,strength);
+  return vec4f(color,1.0);
+}
+`;

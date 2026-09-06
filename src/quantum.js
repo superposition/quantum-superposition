@@ -9,6 +9,21 @@ export function blochVector(p1, phase) {
   return [equator * Math.cos(phase), equator * Math.sin(phase), 1 - 2 * p];
 }
 
+export function dephasedVector(p1, phase, coherence) {
+  const [x, y, z] = blochVector(p1, phase);
+  const lambda = clamp(coherence);
+  return [lambda * x, lambda * y, z];
+}
+
+export function purity(vector) {
+  return (1 + vector.reduce((sum, value) => sum + value * value, 0)) / 2;
+}
+
+export function sectionRadius(p1) {
+  const z = 1 - 2 * clamp(p1);
+  return Math.sqrt(Math.max(0, 1 - z * z));
+}
+
 /** Probability of the positive eigenstate: |0> for Z, |+> for X. */
 export function probabilityZero(p1, phase, basis = "z") {
   if (basis === "z") return 1 - clamp(p1);

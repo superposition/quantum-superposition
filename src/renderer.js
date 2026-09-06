@@ -1,5 +1,11 @@
-import { waveAt, blochVector } from "./quantum.js";
-import { backgroundShader, particleShader, uniforms } from "./shaders.js";
+import {
+  waveAt,
+  blochVector,
+  dephasedVector,
+  sectionRadius,
+} from "./quantum.js";
+import { createScene } from "./pipeline.js";
+import { isSphereMode, previewState } from "./catalog.js";
 
 // Camera projection is also used to place accessible DOM labels at the poles.
 export function projectPoint(point, state, width, height) {
@@ -24,12 +30,24 @@ export async function createRenderer(canvas, state, onStatus) {
     dirty = true,
     last = 0,
     request = 0;
-  let gpu, output, background, particles, stopResize, renderFrame;
+  let gpu, output, scene, stopResize, renderFrame, renderPreviews;
+  const previews = [];
+  const previewVisible = new Set();
+  let previewDirty = true,
+    lastPreview = 0;
+  const previewObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) previewVisible.add(entry.target);
+      else previewVisible.delete(entry.target);
+    }
+    previewDirty = true;
+  });
   let context,
     useFallback = false;
   const viewport = canvas.parentElement;
   const resize = new ResizeObserver(() => {
     dirty = true;
+    previewDirty = true;
   });
   resize.observe(viewport);
   const intersection = new IntersectionObserver(([entry]) => {
@@ -48,6 +66,9 @@ export async function createRenderer(canvas, state, onStatus) {
     canvas = next;
     context = canvas.getContext("2d");
     onStatus("Canvas rendering · same physics");
+    for (const preview of previews) preview.canvas.style.opacity = "0";
+    document.querySelector("#gallery-status").textContent =
+      "Static previews · interactive Canvas viewer";
     if (reason)
       console.info(
         "WebGPU unavailable; using the Canvas renderer.",
@@ -62,27 +83,9 @@ export async function createRenderer(canvas, state, onStatus) {
     const vgpu = await import("vgpu");
     gpu = await vgpu.init();
     output = vgpu.surface(gpu, canvas, { dpr: [1, 1.6] });
-    background = vgpu.effect(gpu, backgroundShader, {
-      set: {
-        params: {
-          width: output.size[0],
-          height: output.size[1],
-          mode: state.mode,
-          padding: 0,
-        },
-      },
-    });
-    particles = vgpu.draw(gpu, {
-      shader: particleShader,
-      vertices: 6,
-      instances: 32768,
-      blend: "additive",
-      set: { params: uniforms(state, output.size) },
-    });
-    await Promise.all([background.compile(output), particles.compile(output)]);
-    stopResize = output.onResize(({ width, height }) => {
-      background.set({ params: { width, height } });
-      particles.set({ params: { width, height } });
+    scene = createScene(vgpu, gpu, output, state);
+    await scene.compile();
+    stopResize = output.onResize(() => {
       dirty = true;
     });
     gpu.gpu.lost.then((info) => {
@@ -92,13 +95,43 @@ export async function createRenderer(canvas, state, onStatus) {
       failed = true;
       fallback(error);
     });
-    onStatus("32,768 field samples");
-    renderFrame = () =>
+    onStatus("vgpu / WebGPU");
+    renderFrame = () => vgpu.frame(gpu, (frame) => scene.render(frame));
+    for (const previewCanvas of document.querySelectorAll(
+      "[data-preview-mode]",
+    )) {
+      const settings = previewState(Number(previewCanvas.dataset.previewMode));
+      const previewOutput = vgpu.surface(gpu, previewCanvas, { dpr: [1, 1] });
+      const previewScene = createScene(
+        vgpu,
+        gpu,
+        previewOutput,
+        settings,
+        true,
+      );
+      const stop = previewOutput.onResize(() => {
+        previewDirty = true;
+      });
+      previews.push({
+        canvas: previewCanvas,
+        scene: previewScene,
+        settings,
+        stop,
+      });
+      previewObserver.observe(previewCanvas);
+      resize.observe(previewCanvas.parentElement);
+      await previewScene.compile();
+    }
+    document.querySelector("#gallery-status").textContent =
+      "vgpu previews · independent default states";
+    renderPreviews = () =>
       vgpu.frame(gpu, (frame) => {
-        frame.pass({ target: output }, (pass) => {
-          pass.draw(background);
-          pass.draw(particles);
-        });
+        for (const preview of previews) {
+          if (!previewVisible.has(preview.canvas)) continue;
+          preview.scene.update(preview.settings);
+          preview.scene.render(frame);
+          preview.canvas.style.opacity = "1";
+        }
       });
   } catch (error) {
     fallback(error);
@@ -110,7 +143,28 @@ export async function createRenderer(canvas, state, onStatus) {
     request = requestAnimationFrame(tick);
     const delta = Math.min((now - (last || now)) / 1000, 0.05);
     last = now;
-    if (!visible || document.hidden) return;
+    if (document.hidden) return;
+    if (
+      !useFallback &&
+      renderPreviews &&
+      (previewDirty || (!state.previewPaused && now - lastPreview > 80))
+    ) {
+      if (!state.previewPaused)
+        for (const preview of previews) {
+          preview.settings.time +=
+            Math.min((now - (lastPreview || now)) / 1000, 0.1) * 0.8;
+          if (isSphereMode(preview.settings.mode))
+            preview.settings.yaw += 0.008;
+        }
+      try {
+        renderPreviews();
+      } catch (error) {
+        fallback(error);
+      }
+      lastPreview = now;
+      previewDirty = false;
+    }
+    if (!visible) return;
     const currentSignature = [
       state.p1,
       state.phase,
@@ -118,6 +172,7 @@ export async function createRenderer(canvas, state, onStatus) {
       state.pitch,
       state.mode,
       state.paused,
+      state.coherence,
     ].join("|");
     dirty ||= currentSignature !== signature;
     signature = currentSignature;
@@ -126,22 +181,13 @@ export async function createRenderer(canvas, state, onStatus) {
     try {
       if (useFallback) drawFallback(context, canvas, state);
       else if (!failed) {
-        particles.set({
-          params: {
-            time: state.time,
-            p1: state.p1,
-            phase: state.phase,
-            mode: state.mode,
-            yaw: state.yaw,
-            pitch: state.pitch,
-          },
-        });
+        scene.update(state);
         renderFrame();
       }
     } catch (error) {
       fallback(error);
     }
-    if (state.mode === 1) {
+    if (isSphereMode(state.mode)) {
       const { width, height } = viewport.getBoundingClientRect();
       for (const [selector, pole] of [
         [".pole-zero", 1],
@@ -164,6 +210,8 @@ export async function createRenderer(canvas, state, onStatus) {
       stopResize?.();
       resize.disconnect();
       intersection.disconnect();
+      previewObserver.disconnect();
+      for (const preview of previews) preview.stop();
       gpu?.dispose();
     },
   };
@@ -195,6 +243,38 @@ function drawFallback(ctx, canvas, state) {
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, width, height);
   if (state.mode === 2) return;
+  if (state.mode === 3) {
+    const columns = 160,
+      rows = 112;
+    for (let row = 0; row < rows; row++)
+      for (let column = 0; column < columns; column++) {
+        const wave = waveAt(
+          ((column + 0.5) / columns - 0.5) * 10.4,
+          ((row + 0.5) / rows - 0.5) * 7.4,
+          state.p1,
+          state.phase,
+          state.time,
+        );
+        const angle = Math.atan2(wave.imaginary, wave.real + 1e-12);
+        const strength = Math.pow(Math.min(1, wave.intensity * 0.5), 0.45);
+        const base = [0.065, 0.11, 0.09];
+        const rgb = [0, 2.1, 4.2].map((offset, i) =>
+          Math.round(
+            255 *
+              (base[i] * (1 - strength) +
+                (0.55 + 0.4 * Math.cos(angle + offset)) * strength),
+          ),
+        );
+        ctx.fillStyle = `rgb(${rgb.join(",")})`;
+        ctx.fillRect(
+          (column * width) / columns,
+          (row * height) / rows,
+          width / columns + 1,
+          height / rows + 1,
+        );
+      }
+    return;
+  }
   ctx.globalCompositeOperation = "lighter";
   if (state.mode === 0) {
     for (let iz = 0; iz < 75; iz++)
@@ -219,6 +299,7 @@ function drawFallback(ctx, canvas, state) {
     const project = (p) => projectPoint(p, state, width, height);
     for (let ring = 0; ring < 12; ring++) {
       ctx.beginPath();
+      let segmentOpen = false;
       ctx.strokeStyle = ring % 3 === 0 ? "#9bbdcd75" : "#9bbdcd35";
       ctx.lineWidth = 0.6;
       for (let i = 0; i <= 150; i++) {
@@ -229,12 +310,56 @@ function drawFallback(ctx, canvas, state) {
           1.75 * Math.sin(t),
           1.75 * Math.cos(t) * Math.sin(a),
         ];
+        if (state.mode === 5 && point[1] > (1 - 2 * state.p1) * 1.75) {
+          segmentOpen = false;
+          continue;
+        }
         const [x, y] = project(point);
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        segmentOpen ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        segmentOpen = true;
       }
       ctx.stroke();
     }
-    const v = blochVector(state.p1, state.phase);
+    if (state.mode === 5) {
+      const radius = sectionRadius(state.p1) * 1.75;
+      ctx.beginPath();
+      for (let i = 0; i <= 150; i++) {
+        const angle = (i / 150) * Math.PI * 2;
+        const [x, y] = project([
+          radius * Math.cos(angle),
+          (1 - 2 * state.p1) * 1.75,
+          radius * Math.sin(angle),
+        ]);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fillStyle = "#d99b6230";
+      ctx.strokeStyle = "#e8b38f";
+      ctx.lineWidth = 1.5;
+      ctx.fill();
+      ctx.stroke();
+      ctx.globalCompositeOperation = "source-over";
+      return;
+    }
+    const pure = blochVector(state.p1, state.phase);
+    if (state.mode === 4) {
+      const reference = project([
+        pure[0] * 1.75,
+        pure[2] * 1.75,
+        -pure[1] * 1.75,
+      ]);
+      ctx.beginPath();
+      ctx.moveTo(...project([0, 0, 0]));
+      ctx.lineTo(...reference);
+      ctx.strokeStyle = "#9bbdcd";
+      ctx.lineWidth = 0.7;
+      ctx.stroke();
+    }
+    const v =
+      state.mode === 4
+        ? dephasedVector(state.p1, state.phase, state.coherence)
+        : pure;
     const [x, y] = project([v[0] * 1.75, v[2] * 1.75, -v[1] * 1.75]);
     const center = project([0, 0, 0]);
     ctx.strokeStyle = "#e8b38f";
