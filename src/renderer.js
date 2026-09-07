@@ -65,10 +65,10 @@ export async function createRenderer(canvas, state, onStatus) {
     canvas.replaceWith(next);
     canvas = next;
     context = canvas.getContext("2d");
-    onStatus("Canvas rendering · same physics");
+    onStatus("Canvas rendering; same physics");
     for (const preview of previews) preview.canvas.style.opacity = "0";
     document.querySelector("#gallery-status").textContent =
-      "Static previews · interactive Canvas viewer";
+      "Static previews; interactive Canvas viewer";
     if (reason)
       console.info(
         "WebGPU unavailable; using the Canvas renderer.",
@@ -123,7 +123,7 @@ export async function createRenderer(canvas, state, onStatus) {
       await previewScene.compile();
     }
     document.querySelector("#gallery-status").textContent =
-      "vgpu previews · independent default states";
+      "vgpu previews; independent default states";
     renderPreviews = () =>
       vgpu.frame(gpu, (frame) => {
         for (const preview of previews) {
@@ -173,6 +173,7 @@ export async function createRenderer(canvas, state, onStatus) {
       state.mode,
       state.paused,
       state.coherence,
+      state.axes?.join(),
     ].join("|");
     dirty ||= currentSignature !== signature;
     signature = currentSignature;
@@ -198,6 +199,15 @@ export async function createRenderer(canvas, state, onStatus) {
         label.style.left = `${x}px`;
         label.style.top = `${y - 10}px`;
         label.style.bottom = "auto";
+      }
+      for (const label of viewport.querySelectorAll("[data-position]")) {
+        if (label.hidden) continue;
+        const point = label.dataset.position
+          .split(",")
+          .map((value) => Number(value) * 2.13);
+        const [x, y] = projectPoint(point, state, width, height);
+        label.style.left = `${x}px`;
+        label.style.top = `${y}px`;
       }
     }
     dirty = false;
@@ -297,6 +307,74 @@ function drawFallback(ctx, canvas, state) {
       }
   } else {
     const project = (p) => projectPoint(p, state, width, height);
+    if (state.mode >= 6) {
+      const axisPoint = (axis) => {
+        const point = [
+          [1, 0, 0],
+          [0, 0, -1],
+          [0, 1, 0],
+        ][Math.abs(axis) - 1];
+        return point.map((v) => v * Math.sign(axis) * 1.75);
+      };
+      const line = (a, b, color, width = 1) => {
+        ctx.beginPath();
+        ctx.moveTo(...project(a));
+        ctx.lineTo(...project(b));
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.stroke();
+      };
+      const dot = (p, color, radius = 4) => {
+        ctx.beginPath();
+        ctx.arc(...project(p), radius, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+      };
+      if (state.mode === 6) {
+        const axes = [1, -1, 2, -2, 3, -3];
+        axes.forEach((a, i) => {
+          dot(axisPoint(a), "#9bbdcd", 3);
+          axes.slice(i + 1).forEach((b) => {
+            if (Math.abs(a) !== Math.abs(b))
+              line(axisPoint(a), axisPoint(b), "#9bbdcd70", 0.8);
+          });
+        });
+        const v = blochVector(state.p1, state.phase);
+        const point = [v[0] * 1.75, v[2] * 1.75, -v[1] * 1.75];
+        line([0, 0, 0], point, "#e8b38f", 1.5);
+        dot(point, "#e8b38f");
+      } else {
+        [1, 2, 3].forEach((axis) =>
+          line(axisPoint(-axis), axisPoint(axis), "#9bbdcd55", 0.7),
+        );
+        (state.axes ?? [1, 2, 3]).forEach((axis, i) => {
+          const color = ["#efa066", "#70b8e0", "#9bcc7a"][i];
+          line([0, 0, 0], axisPoint(axis), color, 1.7);
+          dot(axisPoint(axis), color);
+        });
+        for (let ring = 0; ring < 3; ring++) {
+          ctx.beginPath();
+          for (let i = 0; i <= 150; i++) {
+            const a = (i / 150) * Math.PI * 2,
+              c = Math.cos(a) * 1.75,
+              s = Math.sin(a) * 1.75;
+            const p = project(
+              [
+                [c, s, 0],
+                [c, 0, s],
+                [0, c, s],
+              ][ring],
+            );
+            i ? ctx.lineTo(...p) : ctx.moveTo(...p);
+          }
+          ctx.strokeStyle = "#9bbdcd45";
+          ctx.lineWidth = 0.7;
+          ctx.stroke();
+        }
+      }
+      ctx.globalCompositeOperation = "source-over";
+      return;
+    }
     for (let ring = 0; ring < 12; ring++) {
       ctx.beginPath();
       let segmentOpen = false;

@@ -6,6 +6,7 @@ import { webcrypto } from "node:crypto";
 import { parseHTML } from "linkedom";
 import * as quantum from "../src/quantum.js";
 import * as models from "../src/catalog.js";
+import * as clifford from "../src/clifford.js";
 
 test("experiment controls connect preparation, measurement, reset, and accessible tabs", async () => {
   const { document, window } = parseHTML(
@@ -22,6 +23,7 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
     crypto: webcrypto,
     ...quantum,
     ...models,
+    ...clifford,
     matchMedia: () => ({ matches: true, addEventListener() {} }),
     createRenderer: async (_canvas, _state, status) => {
       status("Test renderer");
@@ -45,7 +47,7 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
   const text = (selector) => $(selector).textContent;
   assert.equal($("#tab-wave").getAttribute("aria-selected"), "true");
   assert.equal($("#pause").getAttribute("aria-pressed"), "true");
-  assert.equal(document.querySelectorAll(".gallery-card").length, 6);
+  assert.equal(document.querySelectorAll(".gallery-card").length, 8);
   click("#tab-measure");
   assert.equal($("#measurement-display").hidden, false);
   assert.equal(
@@ -61,9 +63,9 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
     128,
   );
   click("#measure-one");
-  assert.match(text("#measurement-result"), /now \|1⟩/);
+  assert.match(text("#measurement-result"), /now one/);
   click("#measure-one");
-  assert.match(text("#measurement-result"), /now \|1⟩/);
+  assert.match(text("#measurement-result"), /now one/);
   click("#reset");
   assert.equal(text("#shot-count"), "0");
   assert.equal($("#balance").value, "50");
@@ -73,7 +75,7 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
   change("#phase", "180");
   click("#run-shots");
   assert.equal(text("#count-one"), "128");
-  assert.equal(text("#outcome-one"), "|−⟩");
+  assert.equal(text("#outcome-one"), "minus");
   click("#prepare");
   assert.match(text("#measurement-result"), /fresh copy/);
   click("#tab-bloch");
@@ -92,10 +94,10 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
   click("#tab-section");
   assert.equal($("#phase-control").hidden, true);
   change("#balance", "0");
-  assert.match(text("#section-value"), /radius = 0\.000/);
+  assert.match(text("#section-value"), /radius: 0\.000/);
   click("#tab-complex");
   assert.equal($("#phase-control").hidden, false);
-  assert.match(text("#model-boundary"), /phase encoding/);
+  assert.match(text("#model-boundary"), /display phase/);
   assert.equal(
     $("#model-source").getAttribute("href"),
     "https://vgpu.sh/examples/gradient",
@@ -104,4 +106,49 @@ test("experiment controls connect preparation, measurement, reset, and accessibl
   assert.equal($("#gallery-motion").getAttribute("aria-pressed"), "false");
   click("#pause");
   assert.equal($("#pause").getAttribute("aria-pressed"), "false");
+  click("#tab-clifford");
+  assert.equal($("#clifford-controls").hidden, false);
+  click('[data-gate-demo="h,s"]');
+  assert.match(text("#gate-result"), /Current state: Y positive/);
+  assert.match(text("#gate-probability-y"), /100\.0%/);
+  assert.equal($("#phase").value, "90");
+  assert.match(text("#gate-sequence"), /1\. Hadamard; 2\. Phase/);
+  click("#tab-operators");
+  assert.equal($("#operator-readout").hidden, false);
+  assert.equal(text("#operator-0"), "Positive Z");
+  assert.equal(text("#operator-1"), "Positive X");
+  assert.equal(text("#operator-2"), "Positive Y");
+  click("#gate-undo");
+  assert.match(text("#gate-result"), /Current state: Plus/);
+  assert.equal(text("#operator-1"), "Negative Y");
+  click("#gate-clear");
+  assert.match(text("#gate-result"), /Current state: Zero/);
+  assert.equal($("#gate-undo").disabled, true);
+  click('[data-gate-demo="s,h"]');
+  assert.match(text("#gate-result"), /Current state: Plus/);
+  click('[data-gate-demo="h,s"]');
+  click("#tab-measure");
+  change("#basis", "y", "change");
+  click("#run-shots");
+  assert.equal(text("#count-zero"), "128");
+  click("#measure-one");
+  assert.match(text("#measurement-result"), /now Y positive/);
+  click("#tab-clifford");
+  click('[data-gate="z"]');
+  assert.match(text("#gate-result"), /Current state: Y negative/);
+  assert.equal(text("#shot-count"), "0");
+  change("#balance", "30");
+  assert.equal(text("#gate-sequence"), "No gates applied.");
+  assert.equal(text("#operator-0"), "Positive X");
+  click('[data-gate="h"]');
+  click("#gate-clear");
+  assert.equal($("#balance").value, "30");
+  assert.equal($("#phase").value, "270");
+  click('[data-gate-start="4"]');
+  assert.match(text("#gate-result"), /Current state: Zero/);
+  click('[data-gate="x"]');
+  assert.match(text("#gate-result"), /Current state: One/);
+  click("#reset");
+  assert.equal(text("#gate-sequence"), "No gates applied.");
+  assert.match(text("#gate-result"), /Current state: Plus/);
 });

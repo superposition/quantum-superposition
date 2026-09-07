@@ -6,25 +6,22 @@
     <meta name="theme-color" content="#f3efe6" />
     <meta
       name="description"
-      content="Six interactive vgpu visualizations of quantum amplitudes, qubit state space, dephasing, and measurement, with explicit model boundaries."
+      content="Eight interactive quantum models covering superposition, Clifford gates, Pauli operators and measurement, explained in plain English."
     />
     <meta property="og:title" content="Quantum superposition — vgpu gallery" />
     <meta
       property="og:description"
-      content="Six interactive vgpu visualizations of quantum amplitudes, qubit state space, dephasing, and measurement, with explicit model boundaries."
+      content="Eight interactive quantum models covering superposition, Clifford gates, Pauli operators and measurement, explained in plain English."
     />
     <meta property="og:type" content="website" />
     <meta name="color-scheme" content="light" />
-    <title>Quantum superposition — vgpu gallery</title>
+    <title>Quantum superposition : vgpu gallery</title>
   </head>
   <body>
     <a class="skip-link" href="#gallery">Skip to gallery</a>
     <header class="site-header wrap">
-      <a class="wordmark" href="#" aria-label="Superposition home"
-        ><span class="brand-symbol">ψ</span> superposition<span
-          class="brand-dot"
-          >.</span
-        ></a
+      <a class="wordmark" href="#" aria-label="Superposition home">
+        superposition<span class="brand-dot">.</span></a
       >
       <nav aria-label="Main navigation">
         <a href="#gallery">Gallery</a
@@ -33,8 +30,8 @@
           href="https://github.com/superposition/quantum-superposition"
           target="_blank"
           rel="noopener noreferrer"
-          >Source ↗</a
-        >
+          >Source
+        </a>
       </nav>
       <span class="header-note">Quantum models / vgpu</span>
     </header>
@@ -42,16 +39,17 @@
       <section class="hero wrap" aria-labelledby="hero-title">
         <div class="hero-top">
           <p class="eyebrow">Interactive graphics</p>
-          <span class="edition">6 models</span>
+          <span class="edition">8 models</span>
         </div>
         <h1 id="hero-title">Quantum superposition</h1>
         <div class="hero-bottom">
           <p>
-            Amplitudes, state space, and measurement.<br />Each visualization
-            defines its coordinates, assumptions, and conceptual limits.
+            Quantum states, Clifford gates and measurement.<br />Interactive
+            models with explanations of what each model shows and where it
+            applies.
           </p>
-          <a class="text-link" href="#boundaries"
-            >Concept boundaries <span aria-hidden="true">↓</span></a
+          <a class="text-link" href="#experiments" data-jump="6"
+            >Clifford gates</a
           >
         </div>
       </section>
@@ -87,17 +85,17 @@
                 ><span class="gallery-number">01</span></span
               ><span class="gallery-card-heading"
                 ><span>Wave interference</span
-                ><span aria-hidden="true">↗</span></span
+                ><span aria-hidden="true">Open</span></span
               >
             </button>
             <div class="gallery-card-copy">
-              <p class="gallery-category">Amplitude fields</p>
-              <p>Two coherent modes have complex amplitudes.</p>
+              <p class="gallery-category">Amplitudes</p>
+              <p>Two waves combine.</p>
               <a
                 href="https://vgpu.sh/examples/fft-ocean"
                 target="_blank"
                 rel="noopener noreferrer"
-                >vgpu / Particles ocean ↗</a
+                >vgpu / Particles ocean</a
               >
             </div>
           </article>
@@ -117,17 +115,20 @@
                 ><span class="gallery-number">02</span></span
               ><span class="gallery-card-heading"
                 ><span>Complex amplitude</span
-                ><span aria-hidden="true">↗</span></span
+                ><span aria-hidden="true">Open</span></span
               >
             </button>
             <div class="gallery-card-copy">
-              <p class="gallery-category">Amplitude fields</p>
-              <p>A complex amplitude has magnitude and phase.</p>
+              <p class="gallery-category">Amplitudes</p>
+              <p>
+                A complex amplitude has a size, called its magnitude, and an
+                angle, called its phase.
+              </p>
               <a
                 href="https://vgpu.sh/examples/gradient"
                 target="_blank"
                 rel="noopener noreferrer"
-                >vgpu / Simple Gradient ↗</a
+                >vgpu / Simple Gradient</a
               >
             </div>
           </article>
@@ -147,17 +148,20 @@
                 ><span class="gallery-number">03</span></span
               ><span class="gallery-card-heading"
                 ><span>Pure qubit states</span
-                ><span aria-hidden="true">↗</span></span
+                ><span aria-hidden="true">Open</span></span
               >
             </button>
             <div class="gallery-card-copy">
               <p class="gallery-category">State space</p>
-              <p>A pure qubit corresponds to a unit Bloch vector.</p>
+              <p>
+                A qubit is a quantum system with two basis states, called zero
+                and one.
+              </p>
               <a
                 href="https://vgpu.sh/examples/particle-orbit"
                 target="_blank"
                 rel="noopener noreferrer"
-                >vgpu / Particle Orbit ↗</a
+                >vgpu / Particle Orbit</a
               >
             </div>
           </article>
@@ -177,20 +181,17 @@
                 ><span class="gallery-number">04</span></span
               ><span class="gallery-card-heading"
                 ><span>Pure and mixed states</span
-                ><span aria-hidden="true">↗</span></span
+                ><span aria-hidden="true">Open</span></span
               >
             </button>
             <div class="gallery-card-copy">
               <p class="gallery-category">State space</p>
-              <p>
-                A phase-damping channel scales the off-diagonal density-matrix
-                entries by λ.
-              </p>
+              <p>Dephasing reduces the phase coherence of a state.</p>
               <a
                 href="https://vgpu.sh/examples/particle-orbit"
                 target="_blank"
                 rel="noopener noreferrer"
-                >vgpu / Particle Orbit ↗</a
+                >vgpu / Particle Orbit</a
               >
             </div>
           </article>
@@ -198,7 +199,7 @@
             <button
               class="gallery-open"
               data-jump="5"
-              aria-label="Open Constant-probability sections"
+              aria-label="Open Equal probability sections"
             >
               <span class="gallery-visual"
                 ><img
@@ -209,21 +210,21 @@
                 /><canvas data-preview-mode="5" aria-hidden="true"></canvas
                 ><span class="gallery-number">05</span></span
               ><span class="gallery-card-heading"
-                ><span>Constant-probability sections</span
-                ><span aria-hidden="true">↗</span></span
+                ><span>Equal probability sections</span
+                ><span aria-hidden="true">Open</span></span
               >
             </button>
             <div class="gallery-card-copy">
               <p class="gallery-category">State space</p>
               <p>
-                A plane at fixed Bloch z contains all single-qubit states with
-                the same Z-basis probabilities.
+                States at the same height have the same chances of zero and one
+                in a Z measurement.
               </p>
               <a
                 href="https://vgpu.sh/examples/clipping"
                 target="_blank"
                 rel="noopener noreferrer"
-                >vgpu / Clipping ↗</a
+                >vgpu / Clipping</a
               >
             </div>
           </article>
@@ -242,24 +243,90 @@
                 /><canvas data-preview-mode="2" aria-hidden="true"></canvas
                 ><span class="gallery-number">06</span
                 ><span class="preview-note"
-                  >Z basis: P(0) = P(1) = 0.5</span
+                  >Equal chances of zero and one</span
                 ></span
               ><span class="gallery-card-heading"
                 ><span>Measurement statistics</span
-                ><span aria-hidden="true">↗</span></span
+                ><span aria-hidden="true">Open</span></span
               >
             </button>
             <div class="gallery-card-copy">
               <p class="gallery-category">Measurement</p>
               <p>
-                Projective measurements sample the Born probabilities in a
-                selected basis.
+                The state and the measurement basis determine the chance of each
+                outcome.
               </p>
               <a
                 href="https://vgpu.sh/examples/gradient"
                 target="_blank"
                 rel="noopener noreferrer"
-                >vgpu / Simple Gradient ↗</a
+                >vgpu / Simple Gradient</a
+              >
+            </div>
+          </article>
+          <article class="gallery-card" data-card-mode="6">
+            <button
+              class="gallery-open"
+              data-jump="6"
+              aria-label="Open Clifford gates"
+            >
+              <span class="gallery-visual"
+                ><img
+                  src="./gallery/clifford.png"
+                  alt=""
+                  width="600"
+                  height="380"
+                /><canvas data-preview-mode="6" aria-hidden="true"></canvas
+                ><span class="gallery-number">07</span></span
+              ><span class="gallery-card-heading"
+                ><span>Clifford gates</span
+                ><span aria-hidden="true">Open</span></span
+              >
+            </button>
+            <div class="gallery-card-copy">
+              <p class="gallery-category">Quantum logic</p>
+              <p>
+                Clifford gates are reversible operations that carry Pauli
+                operators to Pauli operators, possibly reversing their signs.
+              </p>
+              <a
+                href="https://vgpu.sh/examples/particle-orbit"
+                target="_blank"
+                rel="noopener noreferrer"
+                >vgpu / Particle Orbit</a
+              >
+            </div>
+          </article>
+          <article class="gallery-card" data-card-mode="7">
+            <button
+              class="gallery-open"
+              data-jump="7"
+              aria-label="Open Pauli operators"
+            >
+              <span class="gallery-visual"
+                ><img
+                  src="./gallery/operators.png"
+                  alt=""
+                  width="600"
+                  height="380"
+                /><canvas data-preview-mode="7" aria-hidden="true"></canvas
+                ><span class="gallery-number">08</span></span
+              ><span class="gallery-card-heading"
+                ><span>Pauli operators</span
+                ><span aria-hidden="true">Open</span></span
+              >
+            </button>
+            <div class="gallery-card-copy">
+              <p class="gallery-category">Quantum logic</p>
+              <p>
+                A Pauli operator describes a measurement with positive and
+                negative outcomes.
+              </p>
+              <a
+                href="https://vgpu.sh/examples/particle-orbit"
+                target="_blank"
+                rel="noopener noreferrer"
+                >vgpu / Particle Orbit</a
               >
             </div>
           </article>
@@ -316,7 +383,7 @@
               tabindex="-1"
               data-mode="5"
             >
-              Constant-probability sections</button
+              Equal probability sections</button
             ><button
               id="tab-measure"
               role="tab"
@@ -325,7 +392,25 @@
               tabindex="-1"
               data-mode="2"
             >
-              Measurement statistics
+              Measurement statistics</button
+            ><button
+              id="tab-clifford"
+              role="tab"
+              aria-selected="false"
+              aria-controls="experiment-panel"
+              tabindex="-1"
+              data-mode="6"
+            >
+              Clifford gates</button
+            ><button
+              id="tab-operators"
+              role="tab"
+              aria-selected="false"
+              aria-controls="experiment-panel"
+              tabindex="-1"
+              data-mode="7"
+            >
+              Pauli operators
             </button>
           </div>
           <div
@@ -348,13 +433,14 @@
                   aria-label="Pause animation"
                   aria-pressed="false"
                 >
-                  Ⅱ
+                  Pause
                 </button>
               </div>
               <div class="canvas-caption">
                 <span class="mini-dot blue"></span
                 ><span id="scene-legend"
-                  >Height = real amplitude · brightness = intensity</span
+                  >Height shows real amplitude. Brightness shows
+                  intensity.</span
                 >
               </div>
               <div
@@ -362,15 +448,15 @@
                 id="canvas-equation"
                 aria-hidden="true"
               >
-                ψ = αψ₀ + βψ₁
+                Amplitudes add before probabilities are calculated
               </div>
               <div class="canvas-bottom">
                 <span class="mono" id="renderer-status"
                   >Preparing the field</span
                 ><span class="mono" id="interaction-hint">Drag to rotate</span>
               </div>
-              <div class="sphere-label pole-zero" hidden>|0⟩</div>
-              <div class="sphere-label pole-one" hidden>|1⟩</div>
+              <div class="sphere-label pole-zero" hidden>Zero</div>
+              <div class="sphere-label pole-one" hidden>One</div>
               <div class="measurement-display" id="measurement-display" hidden>
                 <span class="eyebrow">Measurements of fresh copies</span>
                 <div class="shot-heading">
@@ -380,12 +466,12 @@
                 <div class="shot-grid" id="shot-grid" aria-hidden="true"></div>
                 <div class="histogram">
                   <div class="histogram-row">
-                    <span id="outcome-zero">|0⟩</span>
+                    <span id="outcome-zero">zero</span>
                     <div class="histogram-track"><div id="bar-zero"></div></div>
                     <output id="count-zero">0</output>
                   </div>
                   <div class="histogram-row">
-                    <span id="outcome-one">|1⟩</span>
+                    <span id="outcome-one">one</span>
                     <div class="histogram-track"><div id="bar-one"></div></div>
                     <output id="count-one">0</output>
                   </div>
@@ -395,27 +481,44 @@
                   qubit.
                 </p>
               </div>
+              <span class="clifford-label" data-position="1,0,0" hidden
+                >Plus</span
+              ><span class="clifford-label" data-position="-1,0,0" hidden
+                >Minus</span
+              ><span class="clifford-label" data-position="0,0,-1" hidden
+                >Y positive</span
+              ><span class="clifford-label" data-position="0,0,1" hidden
+                >Y negative</span
+              ><span class="clifford-label" data-position="0,1,0" hidden
+                >Zero</span
+              ><span class="clifford-label" data-position="0,-1,0" hidden
+                >One</span
+              ><span class="operator-label" data-position="1,0,0" hidden
+                >Positive X</span
+              ><span class="operator-label" data-position="0,0,-1" hidden
+                >Positive Y</span
+              ><span class="operator-label" data-position="0,1,0" hidden
+                >Positive Z</span
+              >
             </div>
             <aside class="controls" aria-label="Experiment controls">
               <div class="control-heading">
-                <span class="eyebrow" id="experiment-number">Experiment 1</span
+                <span class="eyebrow" id="experiment-number">Amplitudes</span
                 ><span
                   class="control-symbol"
                   aria-hidden="true"
                   id="control-symbol"
-                  >∿</span
-                >
+                ></span>
               </div>
               <h3 id="experiment-title">Wave interference</h3>
               <p id="experiment-description">
-                Two coherent modes have complex amplitudes. Their sum determines
-                the interference intensity. Relative phase shifts the
-                interference fringes.
+                Two waves combine. Their relative phase determines where they
+                reinforce or cancel each other.
               </p>
               <div id="balance-control" class="slider-control">
                 <div class="control-label">
-                  <label for="balance">State balance</label
-                  ><output id="balance-value" for="balance">50 / 50</output>
+                  <label for="balance">Chance of one in Z</label
+                  ><output id="balance-value" for="balance">50% one</output>
                 </div>
                 <input
                   type="range"
@@ -426,14 +529,13 @@
                   step="1"
                 />
                 <div class="range-ends">
-                  <span>100% |0⟩</span><span>100% |1⟩</span>
+                  <span>Certain zero</span><span>Certain one</span>
                 </div>
               </div>
               <div id="phase-control" class="slider-control">
                 <div class="control-label">
-                  <label for="phase"
-                    >Relative phase <span class="muted">φ</span></label
-                  ><output id="phase-value" for="phase">0°</output>
+                  <label for="phase">Relative phase</label
+                  ><output id="phase-value" for="phase">0 degrees</output>
                 </div>
                 <input
                   type="range"
@@ -444,22 +546,22 @@
                   step="1"
                 />
                 <div class="range-ends">
-                  <span>0</span><span>π</span><span>2π</span>
+                  <span>No turn</span><span>Full turn</span>
                 </div>
               </div>
               <div id="preparation-readout" class="state-readout">
-                <span class="eyebrow" id="state-label">Input pure state</span
+                <span class="eyebrow" id="state-label">Prepared pure state</span
                 ><output id="state-formula" aria-label="Prepared state formula"
-                  >0.707 |0⟩ + 0.707 |1⟩</output
+                  >Equal chances of zero and one.</output
                 >
               </div>
               <div class="wave-controls" id="wave-controls">
                 <button class="primary-button" id="flip-phase">
-                  Shift phase by π <span aria-hidden="true">↔</span>
+                  Add half a turn of phase
                 </button>
                 <p class="control-tip">
-                  A π shift exchanges the constructive and destructive fringes
-                  of the equal-weight field.
+                  Changing relative phase moves the interference bands. The
+                  state balance sets the weight of each wave.
                 </p>
               </div>
               <div id="bloch-controls" hidden>
@@ -467,10 +569,10 @@
                   class="preset-buttons"
                   aria-label="Prepare a quantum state"
                 >
-                  <button data-preset="zero">|0⟩</button
-                  ><button data-preset="plus">|+⟩</button
-                  ><button data-preset="minus">|−⟩</button
-                  ><button data-preset="one">|1⟩</button>
+                  <button data-preset="zero">Zero</button
+                  ><button data-preset="plus">Plus</button
+                  ><button data-preset="minus">Minus</button
+                  ><button data-preset="one">One</button>
                 </div>
                 <p class="control-tip">
                   A point on this sphere represents one pure qubit state. Its
@@ -481,15 +583,16 @@
                 <div class="control-label">
                   <label for="basis">Measurement basis</label
                   ><select id="basis">
-                    <option value="z">Z · zero / one</option>
-                    <option value="x">X · plus / minus</option>
+                    <option value="z">Z: zero or one</option>
+                    <option value="x">X: plus or minus</option>
+                    <option value="y">Y: positive or negative</option>
                   </select>
                 </div>
                 <p class="expected" id="expected">
-                  Expected: 50% |0⟩ · 50% |1⟩
+                  Expected: 50% zero and 50% one.
                 </p>
                 <button class="primary-button" id="run-shots">
-                  Run 128 measurements <span aria-hidden="true">↗</span>
+                  Run 128 measurements <span aria-hidden="true"></span>
                 </button>
                 <div class="measure-actions">
                   <button id="measure-one">Measure this qubit</button
@@ -509,7 +612,7 @@
                 <div id="dephase-controls" hidden>
                   <div class="slider-control">
                     <div class="control-label">
-                      <label for="coherence">Coherence λ</label
+                      <label for="coherence">Coherence</label
                       ><output id="coherence-value" for="coherence"
                         >0.35</output
                       >
@@ -528,20 +631,20 @@
                   </div>
                   <p class="derived-value" id="purity-value"></p>
                   <p class="control-tip">
-                    ρ₀₁ → λρ₀₁. Diagonal populations remain fixed.
+                    The chances of zero and one stay fixed as coherence changes.
                   </p>
                 </div>
                 <div id="section-controls" hidden>
                   <p class="derived-value" id="section-value"></p>
                   <p class="control-tip">
-                    The plane selects states with equal Z-basis populations. The
-                    disk interior represents mixed states.
+                    Every state on the disk has the same chance of zero in a Z
+                    measurement. States inside its edge are mixed.
                   </p>
                 </div>
                 <div hidden id="complex-controls">
                   <div
                     class="phase-key"
-                    aria-label="Cyclic color key from negative pi to positive pi"
+                    aria-label="Repeating phase colours from negative half a turn to positive half a turn"
                     style="
                       background: linear-gradient(
                         to right,
@@ -558,11 +661,12 @@
                     "
                   ></div>
                   <div class="phase-key-labels">
-                    <span>-pi</span><span>0</span><span>pi</span>
+                    <span>Negative half turn</span><span>No turn</span
+                    ><span>Positive half turn</span>
                   </div>
                   <p class="control-tip">
-                    Phase controls color. Intensity controls brightness. A
-                    common phase shift preserves intensity.
+                    Phase sets the colour. Intensity sets the brightness. A
+                    common phase change preserves intensity.
                   </p>
                 </div>
               </div>
@@ -572,15 +676,139 @@
                 target="_blank"
                 class="model-source"
                 id="model-source"
-                >vgpu source / Particles ocean ↗</a
-              ><button class="reset-button" id="reset">
-                ↺ &#160; Reset experiment
-              </button>
+                >vgpu source / Particles ocean </a
+              ><button class="reset-button" id="reset">Reset experiment</button>
             </aside>
           </div>
+          <div id="clifford-controls" hidden>
+            <section>
+              <div class="gate-start">
+                <h4>Start a new sequence</h4>
+                <div class="gate-presets">
+                  <button data-gate-start="0">Plus</button
+                  ><button data-gate-start="1">Minus</button
+                  ><button data-gate-start="2">Y positive</button
+                  ><button data-gate-start="3">Y negative</button
+                  ><button data-gate-start="4">Zero</button
+                  ><button data-gate-start="5">One</button>
+                </div>
+                <p class="control-tip">
+                  Choose a state above, or edit balance and phase to start from
+                  any pure state. Editing either slider starts a new sequence.
+                </p>
+              </div>
+              <h4>Apply a gate</h4>
+              <div class="gate-buttons">
+                <button
+                  data-gate="h"
+                  title="Exchanges the X and Z directions and reverses the Y direction."
+                >
+                  Hadamard</button
+                ><button
+                  data-gate="s"
+                  title="Turns the state one quarter turn around Z. Plus becomes Y positive."
+                >
+                  Phase</button
+                ><button
+                  data-gate="sdg"
+                  title="Reverses the quarter turn of the phase gate."
+                >
+                  Inverse phase</button
+                ><button
+                  data-gate="x"
+                  title="Turns the state half a turn around X. Zero and one exchange places."
+                >
+                  Pauli X</button
+                ><button
+                  data-gate="y"
+                  title="Turns the state half a turn around Y. The X and Z directions reverse."
+                >
+                  Pauli Y</button
+                ><button
+                  data-gate="z"
+                  title="Turns the state half a turn around Z. Plus and minus exchange places."
+                >
+                  Pauli Z
+                </button>
+              </div>
+            </section>
+            <section>
+              <p class="control-tip" id="gate-input"></p>
+              <div class="gate-history">
+                <h4>Sequence in time order</h4>
+                <p id="gate-sequence"></p>
+              </div>
+              <div class="gate-actions">
+                <button id="gate-undo">Undo last gate</button
+                ><button id="gate-clear">Restore starting state</button>
+              </div>
+              <p
+                class="control-tip"
+                id="gate-result"
+                role="status"
+                aria-live="polite"
+              ></p>
+            </section>
+            <section>
+              <div id="gate-probabilities">
+                <h4>Chance of the first outcome</h4>
+                <dl class="probability-list">
+                  <div>
+                    <dt>X measurement</dt>
+                    <dd id="gate-probability-x"></dd>
+                  </div>
+                  <div>
+                    <dt>Y measurement</dt>
+                    <dd id="gate-probability-y"></dd>
+                  </div>
+                  <div>
+                    <dt>Z measurement</dt>
+                    <dd id="gate-probability-z"></dd>
+                  </div>
+                </dl>
+                <a class="model-source" href="#experiments" data-jump="2"
+                  >Measure the current state</a
+                >
+              </div>
+              <div id="operator-readout" hidden>
+                <table class="operator-table">
+                  <caption>
+                    Operators after the full sequence
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Input operator</th>
+                      <th scope="col">Output operator</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Positive X</th>
+                      <td id="operator-0"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Positive Y</th>
+                      <td id="operator-1"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Positive Z</th>
+                      <td id="operator-2"></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p class="control-tip" id="operator-count"></p>
+              </div>
+              <div class="gate-demos">
+                <h4>Compare gate order</h4>
+                <p class="control-tip">Both examples start from zero.</p>
+                <button data-gate-demo="h,s">Hadamard, then phase</button
+                ><button data-gate-demo="s,h">Phase, then Hadamard</button>
+              </div>
+            </section>
+          </div>
           <div class="lab-footnote">
-            <span id="model-technique">Instanced particle field</span
-            ><a href="#boundaries">Concept boundaries ↓</a>
+            <span id="model-technique">A field drawn with repeated points</span
+            ><a href="#boundaries">Concept boundaries </a>
           </div>
         </div>
         <div class="experiment-summary">
@@ -589,7 +817,7 @@
             <p id="model-coordinates"></p>
           </div>
           <div>
-            <h3>Visual encoding</h3>
+            <h3>What the graphics show</h3>
             <p id="experiment-explanation"></p>
           </div>
           <div>
@@ -619,11 +847,12 @@
             </thead>
             <tbody>
               <tr>
-                <th>Amplitude / probability</th>
+                <th scope="row">Amplitude and probability</th>
                 <td>
-                  An amplitude is complex. A probability is real and
-                  nonnegative. For a normalized state and a chosen outcome k,
-                  P(k) = |⟨k|ψ⟩|².
+                  An amplitude has magnitude and phase. For a normalized quantum
+                  state, the probability of a chosen measurement outcome is the
+                  square of the magnitude of its amplitude in that measurement
+                  basis.
                 </td>
                 <td>
                   <a href="#experiments" data-jump="0">Interference</a
@@ -631,11 +860,12 @@
                 </td>
               </tr>
               <tr>
-                <th>Superposition / mixture</th>
+                <th scope="row">Superposition and mixture</th>
                 <td>
-                  A coherent superposition retains relative phase. A diagonal
-                  mixture has no off-diagonal coherence in the selected basis.
-                  Equal populations alone do not determine a state.
+                  A pure superposition has a definite relative phase. A
+                  statistical mixture can reduce or lose this phase coherence.
+                  Equal chances of zero and one do not by themselves specify a
+                  state.
                 </td>
                 <td>
                   <a href="#experiments" data-jump="1">Pure states</a
@@ -643,23 +873,22 @@
                 </td>
               </tr>
               <tr>
-                <th>State space / physical space</th>
+                <th scope="row">State space and physical space</th>
                 <td>
-                  The Bloch ball represents single-qubit density matrices.
-                  Positions in this ball encode measurement statistics, not
-                  locations of a particle.
+                  The Bloch sphere and its interior describe the states of one
+                  qubit. A position in this drawing determines measurement
+                  statistics; it does not locate a particle in physical space.
                 </td>
                 <td>
                   <a href="#experiments" data-jump="5">Probability sections</a>
                 </td>
               </tr>
               <tr>
-                <th>Dephasing / recorded measurement</th>
+                <th scope="row">Dephasing and measurement</th>
                 <td>
-                  Dephasing reduces ensemble coherence without selecting an
-                  outcome. An ideal projective measurement conditioned on a
-                  recorded outcome updates one copy to the corresponding
-                  eigenstate.
+                  Dephasing can reduce coherence without recording an outcome.
+                  An ideal measurement with a recorded outcome leaves one copy
+                  in the corresponding measurement state.
                 </td>
                 <td>
                   <a href="#experiments" data-jump="4">Dephasing</a
@@ -667,42 +896,103 @@
                 </td>
               </tr>
               <tr>
-                <th>One copy / ensemble</th>
+                <th scope="row">One copy and many copies</th>
                 <td>
-                  One shot records one outcome. Batch frequencies estimate Born
-                  probabilities from independent preparations. Repeated
-                  measurement of the same collapsed copy in the same basis is
-                  deterministic.
+                  A single measurement records one outcome. Batches estimate
+                  probabilities using fresh preparations. Repeating an ideal
+                  measurement of the same copy in the same basis gives the same
+                  result.
                 </td>
                 <td><a href="#experiments" data-jump="2">Measurement</a></td>
               </tr>
               <tr>
-                <th>Single qubit / entanglement</th>
+                <th scope="row">Classical logic and quantum gates</th>
                 <td>
-                  A single Bloch vector does not describe correlations between
-                  multiple systems. The models in this gallery do not simulate
-                  entanglement.
+                  A classical NOT gate exchanges zero and one. Pauli X does the
+                  same to these two quantum states, and also acts on their
+                  superpositions. Every gate in this viewer is reversible and
+                  preserves the length of a pure state direction.
                 </td>
-                <td>Gallery-wide limit</td>
+                <td><a href="#experiments" data-jump="6">Clifford gates</a></td>
+              </tr>
+              <tr>
+                <th scope="row">A state and an operator</th>
+                <td>
+                  A state determines the probabilities of measurement results.
+                  An operator describes a measurement or a transformation. The
+                  same Pauli operator can be used to describe either a
+                  measurement or a gate, but applying a gate does not record a
+                  measurement result.
+                </td>
+                <td>
+                  <a href="#experiments" data-jump="7">Pauli operators</a>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Clifford gates and general gates</th>
+                <td>
+                  Hadamard and phase generate all single-qubit Clifford actions.
+                  Starting at zero, these gates reach only the six marked
+                  stabilizer states. A gate outside this set, such as the T gate
+                  with its eighth turn around Z, can leave these six directions.
+                </td>
+                <td>
+                  <a href="#experiments" data-jump="6">Clifford gates</a
+                  ><a href="#experiments" data-jump="7">Pauli operators</a>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Overall phase and operator sign</th>
+                <td>
+                  An overall phase change leaves the probabilities of an
+                  isolated qubit unchanged. Reversing a measurement operator
+                  exchanges its positive and negative outcome labels. The
+                  operator table keeps track of these signs.
+                </td>
+                <td>
+                  <a href="#experiments" data-jump="7">Pauli operators</a>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">One qubit and entanglement</th>
+                <td>
+                  Clifford circuits can entangle multiple qubits using gates
+                  such as controlled NOT. A single Bloch sphere cannot describe
+                  those joint correlations. The models here contain one qubit.
+                </td>
+                <td><a href="#experiments" data-jump="6">Clifford gates</a></td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="model-scope">
           <div>
-            <h3>State convention</h3>
-            <p class="scope-equation">|ψ⟩ = √(1 − p)|0⟩ + exp(iφ)√p |1⟩</p>
+            <h3>State preparation</h3>
             <p>
-              p = P(1) in the Z basis. Amplitudes are normalized. Global phase
-              does not affect probabilities.
+              The balance slider sets the chance of one in a Z measurement. The
+              phase slider sets the angle of the one amplitude relative to the
+              zero amplitude. Together they specify a pure qubit state, apart
+              from an overall phase that does not affect its measurement
+              probabilities.
+            </p>
+            <p>
+              Clifford gates change this shared preparation. The operator view
+              tracks the complete gate sequence, independently of the chosen
+              starting state. Undo removes the last gate; restore returns to the
+              starting state.
             </p>
           </div>
           <div>
-            <h3>Rendering and computation</h3>
+            <h3>Model limits</h3>
             <p>
-              vgpu renders the field, phase map, and state-space geometry. The
-              graphics are classical computations. Spatial-field coordinates are
-              dimensionless; no full Schrödinger evolution is solved.
+              The wave field is an illustration in arbitrary units. It does not
+              solve the full time evolution of a physical quantum system. Sphere
+              rotation changes only the viewing angle.
+            </p>
+            <p>
+              The term Clifford here refers to the quantum gate group. The site
+              does not cover general Clifford algebras. The gates are ideal, and
+              their internal physical operation is not simulated.
             </p>
           </div>
         </div>
@@ -712,35 +1002,43 @@
             href="https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information"
             target="_blank"
             rel="noopener noreferrer"
-            >IBM Quantum / state vectors and measurement ↗</a
+            >IBM Quantum / state vectors and measurement </a
           ><a
             href="https://vgpu.sh/examples"
             target="_blank"
             rel="noopener noreferrer"
-            >vgpu / example gallery ↗</a
+            >vgpu / example gallery </a
           ><a
             href="https://github.com/superposition/quantum-superposition/blob/main/ATTRIBUTION.md"
             target="_blank"
             rel="noopener noreferrer"
-            >Source mapping and licenses ↗</a
+            >Source mapping and licenses
+          </a>
+          <a
+            href="https://quantum.cloud.ibm.com/docs/en/api/qiskit/qiskit.quantum_info.Clifford"
+            target="_blank"
+            rel="noopener noreferrer"
+            >IBM Quantum / Clifford operators</a
+          ><a
+            href="https://quantum.cloud.ibm.com/docs/en/api/qiskit/qiskit.circuit.library.TGate"
+            target="_blank"
+            rel="noopener noreferrer"
+            >IBM Quantum / T gate</a
           >
         </div>
       </section>
     </main>
     <footer class="wrap">
-      <a class="wordmark" href="#"
-        ><span class="brand-symbol">ψ</span> superposition<span
-          class="brand-dot"
-          >.</span
-        ></a
+      <a class="wordmark" href="#">
+        superposition<span class="brand-dot">.</span></a
       >
-      <p>Single-qubit models · vgpu 0.4.0</p>
+      <p>Single-qubit models. Built with vgpu 0.4.0.</p>
       <a
         href="https://vgpu.sh/docs/cli"
         target="_blank"
         rel="noopener noreferrer"
-        >Made with vgpu <span aria-hidden="true">↗</span></a
-      >
+        >Made with vgpu <span aria-hidden="true"></span
+      ></a>
     </footer>
     <noscript
       ><p class="noscript">

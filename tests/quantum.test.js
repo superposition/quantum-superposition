@@ -30,7 +30,7 @@ test("phase distinguishes coherent plus and minus states in X but not Z", () => 
   close(probabilityZero(0.5, Math.PI, "z"), 0.5);
 });
 test("remeasuring a collapsed state in its own basis repeats the outcome", () => {
-  for (const basis of ["z", "x"])
+  for (const basis of ["z", "x", "y"])
     for (const outcome of [0, 1]) {
       const state = collapse(basis, outcome);
       for (const r of [0, 0.1, 0.5, 0.999999999])

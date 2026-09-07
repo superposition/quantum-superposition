@@ -20,6 +20,7 @@ struct Params {
   time: f32, p1: f32, phase: f32, mode: f32,
   width: f32, height: f32, yaw: f32, pitch: f32,
   coherence: f32, padding: f32,
+  axisX: f32, axisY: f32, axisZ: f32,
 }
 @group(0) @binding(0) var<uniform> params: Params;
 const PI: f32 = 3.14159265359;
@@ -36,6 +37,12 @@ fn project(point: vec3f) -> vec3f {
   let b = vec3f(a.x, a.y * cp - a.z * sp, a.y * sp + a.z * cp);
   let depth = 7.7 + b.z;
   return vec3f(b.x * 3.05 / depth / (params.width / params.height), b.y * 3.05 / depth, depth);
+}
+fn axisPoint(axis: f32) -> vec3f {
+  var point = vec3f(1.0,0.0,0.0);
+  if (abs(axis)>1.5) { point=vec3f(0.0,0.0,-1.0); }
+  if (abs(axis)>2.5) { point=vec3f(0.0,1.0,0.0); }
+  return point * sign(axis);
 }
 @vertex fn vs_main(@builtin(vertex_index) vertex: u32, @builtin(instance_index) instance: u32) -> Out {
   var corners = array<vec2f,6>(vec2f(-1,-1),vec2f(1,-1),vec2f(-1,1),vec2f(-1,1),vec2f(1,-1),vec2f(1,1));
@@ -59,6 +66,58 @@ fn project(point: vec3f) -> vec3f {
     color = mix(color, vec3f(0.97,0.9,0.74), min(intensity*0.38,0.65));
     alpha = 0.018*env + intensity * 0.48;
     radius = 0.75 + min(intensity, 1.5)*0.72;
+  } else if (params.mode > 5.5) {
+    alpha = 0.0;
+    if (params.mode < 6.5) {
+      if (instance < 30000u) {
+        let longitude=f32(instance%250u)/250.0*2.0*PI;
+        let latitude=f32(instance/250u)/119.0*PI;
+        point=vec3f(sin(latitude)*cos(longitude),cos(latitude),sin(latitude)*sin(longitude))*1.75;
+        alpha=select(0.001,0.05,instance%50u==0u || (instance/250u)%20u==0u);
+        radius=0.9;
+      } else if (instance < 31536u) {
+        let edge=(instance-30000u)/128u;
+        let pair=edge/4u;
+        let a=select(select(1.0,2.0,pair==2u),-select(1.0,2.0,pair==2u),edge%4u>=2u);
+        let b=select(select(2.0,3.0,pair>0u),-select(2.0,3.0,pair>0u),edge%2u==1u);
+        point=mix(axisPoint(a),axisPoint(b),f32((instance-30000u)%128u)/127.0)*1.75;
+        alpha=0.19; radius=1.05;
+      } else if (instance < 31920u) {
+        let marker=(instance-31536u)/64u;
+        let axis=f32(marker/2u+1u)*select(1.0,-1.0,marker%2u==1u);
+        point=axisPoint(axis)*1.75;
+        alpha=0.028; radius=5.0;
+      } else if (instance >= 32000u) {
+        let equator=2.0*sqrt(params.p1*(1.0-params.p1));
+        let t=min(1.0,f32(instance-32000u)/700.0);
+        point=vec3f(equator*cos(params.phase),1.0-2.0*params.p1,-equator*sin(params.phase))*1.75*t;
+        color=vec3f(0.98,0.72,0.49); alpha=0.05; radius=select(1.8,7.0,t>=1.0);
+      }
+    } else {
+      if (instance < 30000u) {
+        let ring=instance/10000u;
+        let angle=f32(instance%10000u)/10000.0*2.0*PI;
+        point=vec3f(cos(angle),sin(angle),0.0);
+        if (ring==1u) { point=vec3f(cos(angle),0.0,sin(angle)); }
+        if (ring==2u) { point=vec3f(0.0,cos(angle),sin(angle)); }
+        point*=1.75; alpha=0.005; radius=1.0;
+      } else if (instance < 31024u) {
+        let i=instance-30000u;
+        let axis=f32(i/342u+1u);
+        point=axisPoint(axis)*(f32(i%342u)/341.0*2.0-1.0)*1.75;
+        alpha=0.08; radius=0.9;
+      } else if (instance < 32560u) {
+        let i=instance-31024u;
+        let source=i/512u;
+        let t=min(1.0,f32(i%512u)/448.0);
+        let axis=select(select(params.axisX,params.axisY,source==1u),params.axisZ,source==2u);
+        point=axisPoint(axis)*1.75*t;
+        color=vec3f(0.94,0.62,0.4);
+        if (source==1u) { color=vec3f(0.44,0.72,0.88); }
+        if (source==2u) { color=vec3f(0.61,0.8,0.48); }
+        alpha=0.045; radius=select(1.8,7.0,t>=1.0);
+      }
+    }
   } else if (params.mode < 1.5 || params.mode > 3.5) {
     let equator = 2.0 * sqrt(params.p1 * (1.0 - params.p1));
     // Logical Bloch coordinates (x,y,z) map to world (x,z,-y), so |0> is up.
@@ -140,6 +199,9 @@ export function uniforms(state, size) {
     pitch: state.pitch ?? (state.mode === 1 ? 0.18 : 0.62),
     coherence: state.coherence ?? 1,
     padding: 0,
+    axisX: state.axes?.[0] ?? 1,
+    axisY: state.axes?.[1] ?? 2,
+    axisZ: state.axes?.[2] ?? 3,
   };
 }
 
@@ -148,6 +210,7 @@ struct Params {
   time: f32, p1: f32, phase: f32, mode: f32,
   width: f32, height: f32, yaw: f32, pitch: f32,
   coherence: f32, padding: f32,
+  axisX: f32, axisY: f32, axisZ: f32,
 }
 @group(0) @binding(0) var<uniform> params: Params;
 const PI: f32 = 3.14159265359;

@@ -3,124 +3,164 @@ export const catalog = [
     mode: 0,
     id: "wave",
     title: "Wave interference",
-    group: "Amplitude fields",
-    equation: "ψ = αψ₀ + βψ₁",
-    legend: "Height: Re(ψ) · brightness: |ψ|²",
+    group: "Amplitudes",
+    equation: "Amplitudes add before probabilities are calculated",
+    legend: "Height shows real amplitude. Brightness shows intensity.",
     description:
-      "Two coherent modes have complex amplitudes. Their sum determines the interference intensity. Relative phase shifts the interference fringes.",
+      "Two waves combine. Their relative phase determines where they reinforce or cancel each other.",
     coordinates:
-      "Two dimensionless spatial coordinates; vertical displacement represents the real amplitude.",
+      "The two horizontal directions describe position in arbitrary units. Height shows the real part of the combined amplitude.",
     boundary:
-      "The points sample an amplitude field. They do not represent individual particles. The Gaussian envelope is illustrative and is not normalized as a spatial probability density.",
+      "Each point samples a wave field. The points are not individual particles. This illustrative field has not been scaled so that its total probability is one.",
     encoding:
-      "Instanced points display Re(ψ) as height and |ψ|² as brightness. Animation changes the common phase; intensity is time-independent in this model.",
+      "Point height shows real amplitude. Brightness shows squared amplitude magnitude, called intensity. Animation changes the common phase while leaving intensity unchanged.",
     source: "fft-ocean",
     sourceTitle: "Particles ocean",
-    technique: "Instanced particle field",
+    technique: "A field drawn with repeated points",
   },
   {
     mode: 1,
     id: "bloch",
     title: "Pure qubit states",
     group: "State space",
-    equation: "|ψ⟩ = cos(θ/2)|0⟩ + exp(iφ)sin(θ/2)|1⟩",
-    legend: "Copper: state vector · surface: pure states",
+    equation: "Each surface point represents a pure qubit state",
+    legend: "The copper line points to the prepared state.",
     description:
-      "A pure qubit corresponds to a unit Bloch vector. Its polar angle determines the Z-basis probabilities. Its azimuth is the relative phase.",
+      "A qubit is a quantum system with two basis states, called zero and one. A pure state appears as a point on the Bloch sphere.",
     coordinates:
-      "Bloch coordinates (x, y, z); z = P(0) − P(1). The vertical screen axis represents z.",
+      "The sphere has three measurement axes, called X, Y and Z. The upward direction is positive Z. Height sets the difference between the chances of zero and one.",
     boundary:
-      "The sphere is a state-space representation. Its axes are not spatial coordinates or particle trajectories. This entry represents one qubit and excludes entanglement.",
+      "The sphere represents possible states, not a particle moving through space. It describes one qubit and cannot show entanglement between qubits.",
     encoding:
-      "The endpoint of the copper vector identifies the prepared state. The north and south poles are |0⟩ and |1⟩.",
+      "The copper line points from the centre to the current state. Zero is at the top and one is at the bottom. Relative phase sets the direction around the vertical axis.",
     source: "particle-orbit",
     sourceTitle: "Particle Orbit",
-    technique: "Point sprites and camera input",
+    technique: "Points on a sphere with a movable view",
   },
   {
     mode: 2,
     id: "measure",
     title: "Measurement statistics",
     group: "Measurement",
-    equation: "P(k) = |⟨k|ψ⟩|²",
-    legend: "Copper: first outcome · blue: second outcome",
+    equation: "Each measurement records one outcome",
+    legend: "Copper marks the first outcome. Blue marks the second.",
     description:
-      "Projective measurements sample the Born probabilities in a selected basis. Repeating the experiment on independently prepared copies produces outcome frequencies.",
+      "The state and the measurement basis determine the chance of each outcome. A basis specifies the pair of states the measurement distinguishes.",
     coordinates:
-      "Sample index and counts. Each dot corresponds to one simulated measurement.",
+      "Each dot records one simulated measurement. The bars count how often each outcome occurs.",
     boundary:
-      "A batch prepares a fresh pure state for each shot. Measuring one copy updates that copy to the outcome eigenstate. The random source is a browser PRNG; no quantum hardware is used.",
+      "Each batch uses 128 fresh copies of the prepared state. Measuring the same copy again in the same basis repeats its recorded outcome. Random samples come from the browser, not quantum hardware.",
     encoding:
-      "128 sample dots and a histogram display the batch outcomes. The single-copy measurement result is recorded separately.",
+      "Dots and bars show the batch results. The result for a single copy is recorded separately. Changing the measurement basis can make that copy's next outcome uncertain again.",
     source: "gradient",
     sourceTitle: "Simple Gradient",
-    technique: "Fragment field with outcome overlay",
+    technique: "A colour field with measurement counts",
   },
   {
     mode: 3,
     id: "complex",
     title: "Complex amplitude",
-    group: "Amplitude fields",
-    equation: "ψ = Re(ψ) + i Im(ψ)",
-    legend: "Color: arg(ψ) · brightness: |ψ|²",
+    group: "Amplitudes",
+    equation: "Amplitude has both magnitude and phase",
+    legend: "Colour shows phase. Brightness shows intensity.",
     description:
-      "A complex amplitude has magnitude and phase. The color map displays phase over the same two-mode field used in the interference surface.",
+      "A complex amplitude has a size, called its magnitude, and an angle, called its phase. This view shows the same combined waves as the interference view.",
     coordinates:
-      "Two dimensionless spatial coordinates, viewed directly from above.",
+      "The two directions describe position in arbitrary units, viewed from above.",
     boundary:
-      "Color is a phase encoding. It is not an observable color of a quantum particle. A common phase rotates the color map while leaving |ψ|² unchanged.",
+      "Colour is a way to display phase, not the visible colour of a quantum particle. Changing the common phase changes the colours without changing measurement probabilities.",
     encoding:
-      "The cyclic palette maps phase from −π to π. Dark bands have low intensity; phase becomes undefined at exact amplitude zeros.",
+      "Colour follows a repeating scale of phase angles. Dark regions have low intensity. Phase is undefined wherever the amplitude is exactly zero.",
     source: "gradient",
     sourceTitle: "Simple Gradient",
-    technique: "Fullscreen fragment shader",
+    technique: "Colour calculated for each pixel",
   },
   {
     mode: 4,
     id: "dephase",
     title: "Pure and mixed states",
     group: "State space",
-    equation: "(x, y, z) → (λx, λy, z)",
-    legend: "Copper: dephased state · blue: pure-state reference",
+    equation: "Dephasing preserves the chances of zero and one",
+    legend: "Copper shows the changed state. Blue shows the input.",
     description:
-      "A phase-damping channel scales the off-diagonal density-matrix entries by λ. Z-basis populations are preserved while coherence decreases.",
+      "Dephasing reduces the phase coherence of a state. In this model it shortens the X and Y components while leaving the Z component unchanged.",
     coordinates:
-      "Bloch-ball coordinates. The vector length determines purity: Tr(ρ²) = (1 + |r|²)/2.",
+      "Pure states lie on the sphere. Mixed states lie inside it. Purity ranges from one half at the centre to one on the surface.",
     boundary:
-      "Dephasing describes an ensemble channel without a recorded outcome. The slider parameterizes coherence, not physical time. This channel applies only to this view; the measurement entry samples the shared input pure state.",
+      "This view describes dephasing without a recorded measurement outcome. The coherence slider is not a clock. Only this view uses the changed state; the measurement view uses the shared pure preparation.",
     encoding:
-      "The copper vector contracts toward the z axis as λ decreases. States with |r| < 1 are mixed. Z eigenstates remain pure under this channel.",
+      "The copper line approaches the vertical axis as coherence decreases. Zero and one remain pure under this process. The blue line retains the original pure state.",
     source: "particle-orbit",
     sourceTitle: "Particle Orbit",
-    technique: "Instanced state vectors",
+    technique: "Two state directions drawn with points",
   },
   {
     mode: 5,
     id: "section",
-    title: "Constant-probability sections",
+    title: "Equal probability sections",
     group: "State space",
-    equation: "z = 1 − 2P(1)",
-    legend: "Copper plane: fixed P(1) · rim: pure states",
+    equation: "Every point on the disk has the same zero and one chances",
+    legend: "The copper disk contains states with equal Z probabilities.",
     description:
-      "A plane at fixed Bloch z contains all single-qubit states with the same Z-basis probabilities. The boundary circle contains pure states; its interior contains mixed states.",
-    coordinates: "A geometric section of the Bloch ball at z = 1 − 2P(1).",
+      "States at the same height have the same chances of zero and one in a Z measurement. A horizontal slice collects these states in one disk.",
+    coordinates:
+      "Height is the chance of zero minus the chance of one. The disk lies inside the Bloch sphere at that height.",
     boundary:
-      "Clipping reveals a set of states. It does not apply a quantum gate, perform a measurement, or collapse a wavefunction. Points on the section can differ in other measurement bases.",
+      "Cutting the drawing exposes a set of possible states. It does not apply a gate or perform a measurement. States on the same disk can give different X or Y measurement probabilities.",
     encoding:
-      "The upper surface is clipped to expose the section. Changing P(1) moves the plane; the disk radius is √(1 − z²).",
+      "The upper surface is removed to expose the disk. Its edge contains pure states and its interior contains mixed states. The disk becomes a point at either pole.",
     source: "clipping",
     sourceTitle: "Clipping",
-    technique: "Plane clipping and section geometry",
+    technique: "A plane cuts the sphere to reveal a section",
+  },
+  {
+    mode: 6,
+    id: "clifford",
+    title: "Clifford gates",
+    group: "Quantum logic",
+    equation: "Gate order can change the final state",
+    legend: "Six marked states surround the copper state direction.",
+    description:
+      "Clifford gates are reversible operations that carry Pauli operators to Pauli operators, possibly reversing their signs. Apply a sequence to change the prepared qubit.",
+    coordinates:
+      "The six marked directions are zero, one, plus, minus, Y positive and Y negative. They are the six single-qubit stabilizer states: each gives a certain outcome on one Pauli measurement axis.",
+    boundary:
+      "Clifford gates move these six states among themselves. They also act on every other qubit state, but cannot reach every pure state from zero. The connecting lines show geometry, not the physical path taken during a gate.",
+    encoding:
+      "The six marked directions form an octahedron. The copper line shows the current state after the complete sequence. A gate changes the shared preparation used by the other views.",
+    source: "particle-orbit",
+    sourceTitle: "Particle Orbit",
+    technique: "Six state markers and an octahedron drawn with points",
+  },
+  {
+    mode: 7,
+    id: "operators",
+    title: "Pauli operators",
+    group: "Quantum logic",
+    equation: "There are 24 single-qubit Clifford actions",
+    legend: "Copper tracks X. Blue tracks Y. Green tracks Z.",
+    description:
+      "A Pauli operator describes a measurement with positive and negative outcomes. The same operator can also act as a gate. This view tracks the measurement operators through the gate sequence.",
+    coordinates:
+      "Fixed labels mark the positive X, Y and Z directions. Each coloured line follows an input operator as the sequence carries it to a positive or negative output direction.",
+    boundary:
+      "This is a forward transformation of operators alongside the state. A reversed operator sign swaps the positive and negative outcome labels. Overall phase is omitted; it does not change these operators or isolated-qubit probabilities.",
+    encoding:
+      "The table gives the exact operator mapping for the complete sequence. The three coloured directions stay perpendicular. Their 24 possible orientations describe all single-qubit Clifford actions when overall phase is ignored.",
+    source: "particle-orbit",
+    sourceTitle: "Particle Orbit",
+    technique: "Three transformed operator directions drawn with points",
   },
 ];
 
-export const galleryOrder = [0, 3, 1, 4, 5, 2];
-export const isSphereMode = (mode) => [1, 4, 5].includes(mode);
+export const galleryOrder = [0, 3, 1, 4, 5, 2, 6, 7];
+export const isSphereMode = (mode) => [1, 4, 5, 6, 7].includes(mode);
 export function previewState(mode) {
   return {
     mode,
     p1: mode === 5 ? 0.35 : 0.5,
-    phase: mode === 4 ? 0.7 : 0,
+    phase: mode === 4 ? 0.7 : mode === 6 ? Math.PI / 2 : 0,
+    axes: mode === 7 ? [3, 1, 2] : [1, 2, 3],
     coherence: 0.35,
     time: 0.7,
     yaw: 0.38,

@@ -11,6 +11,15 @@ import {
 } from "./quantum.js";
 import { createRenderer } from "./renderer.js";
 import { catalog, galleryOrder, isSphereMode } from "./catalog.js";
+import {
+  gates,
+  sequenceAxes,
+  applySequence,
+  stateName,
+  operatorName,
+  cliffordOrientations,
+  stabilizerStates,
+} from "./clifford.js";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -25,7 +34,10 @@ const state = {
   paused: motion.matches,
   previewPaused: motion.matches,
   coherence: 0.35,
+  axes: [1, 2, 3],
 };
+let gateInput = { p1: state.p1, phase: state.phase };
+let sequence = [];
 let collapsed = null;
 let shots = [];
 let basis = "z";
@@ -37,7 +49,11 @@ function random() {
   return value[0] / 4294967296;
 }
 function outcomes() {
-  return basis === "z" ? ["|0⟩", "|1⟩"] : ["|+⟩", "|−⟩"];
+  return {
+    z: ["zero", "one"],
+    x: ["plus", "minus"],
+    y: ["Y positive", "Y negative"],
+  }[basis];
 }
 
 function updateState() {
@@ -45,8 +61,8 @@ function updateState() {
   const degrees = Math.round((state.phase / TAU) * 360);
   $("#balance").value = percent;
   $("#phase").value = degrees;
-  $("#balance-value").textContent = `${100 - percent} / ${percent}`;
-  $("#phase-value").textContent = `${degrees}°`;
+  $("#balance-value").textContent = `${percent}% one`;
+  $("#phase-value").textContent = `${degrees} degrees`;
   $("#balance").style.setProperty("--fill", `${percent}%`);
   $("#phase").style.setProperty("--fill", `${degrees / 3.6}%`);
   $("#balance").setAttribute(
@@ -54,25 +70,91 @@ function updateState() {
     `${100 - percent} percent zero, ${percent} percent one`,
   );
   $("#phase").setAttribute("aria-valuetext", `${degrees} degrees`);
-  const a = Math.sqrt(1 - state.p1).toFixed(3),
-    b = Math.sqrt(state.p1).toFixed(3);
-  const phase =
-    degrees === 0 || degrees === 360
-      ? ""
-      : `exp(i·${(state.phase / Math.PI).toFixed(2)}π) `;
-  $("#state-formula").textContent = `${a}|0⟩ + ${b}${phase}|1⟩`;
+  $("#state-formula").textContent =
+    `${stateName(state)}. A Z measurement gives zero with ${(100 * (1 - state.p1)).toFixed(1)}% probability and one with ${(100 * state.p1).toFixed(1)}% probability.`;
   const p = probabilityZero(state.p1, state.phase, basis);
   const labels = outcomes();
   $("#expected").textContent =
-    `Expected: ${(p * 100).toFixed(0)}% ${labels[0]} · ${((1 - p) * 100).toFixed(0)}% ${labels[1]}`;
+    `Expected: ${(p * 100).toFixed(0)}% ${labels[0]}; ${((1 - p) * 100).toFixed(0)}% ${labels[1]}`;
   $("#coherence").value = Math.round(state.coherence * 100);
   $("#coherence").style.setProperty("--fill", `${state.coherence * 100}%`);
   $("#coherence-value").textContent = state.coherence.toFixed(2);
   $("#purity-value").textContent =
-    `Tr(ρ²) = ${purity(dephasedVector(state.p1, state.phase, state.coherence)).toFixed(3)}`;
+    `Purity: ${purity(dephasedVector(state.p1, state.phase, state.coherence)).toFixed(3)}`;
   $("#section-value").textContent =
-    `z = ${(1 - 2 * state.p1).toFixed(2)} · radius = ${sectionRadius(state.p1).toFixed(3)}`;
+    `Height: ${(1 - 2 * state.p1).toFixed(2)}. Disk radius: ${sectionRadius(state.p1).toFixed(3)}.`;
+  updateClifford();
 }
+
+function startSequence() {
+  gateInput = { p1: state.p1, phase: state.phase };
+  sequence = [];
+  state.axes = [1, 2, 3];
+}
+
+function updateClifford() {
+  $("#gate-input").textContent = `Starting state: ${stateName(gateInput)}.`;
+  $("#gate-sequence").textContent = sequence.length
+    ? sequence.map((key, i) => `${i + 1}. ${gates[key].name}`).join("; ")
+    : "No gates applied.";
+  $("#gate-result").textContent =
+    `Current state: ${stateName(state)}. ${sequence.length ? gates[sequence.at(-1)].explanation : "Choose a gate to change this state."}`;
+  $("#gate-undo").disabled = !sequence.length;
+  $("#gate-clear").disabled = !sequence.length;
+  for (let i = 0; i < 3; i++)
+    $(`#operator-${i}`).textContent = operatorName(state.axes[i]);
+  const index = cliffordOrientations.findIndex((axes) =>
+    axes.every((axis, i) => axis === state.axes[i]),
+  );
+  $("#operator-count").textContent =
+    `Orientation ${index + 1} of ${cliffordOrientations.length}. Overall phase is ignored.`;
+  for (const [axis, name] of [
+    ["x", "plus"],
+    ["y", "Y positive"],
+    ["z", "zero"],
+  ]) {
+    $(`#gate-probability-${axis}`).textContent =
+      `${(100 * probabilityZero(state.p1, state.phase, axis)).toFixed(1)}% ${name}`;
+  }
+}
+
+function runSequence() {
+  Object.assign(state, applySequence(gateInput, sequence));
+  state.axes = sequenceAxes(sequence);
+  clearMeasurements();
+  updateState();
+}
+
+$$("[data-gate]").forEach((button) =>
+  button.addEventListener("click", () => {
+    sequence.push(button.dataset.gate);
+    runSequence();
+  }),
+);
+$("#gate-undo").addEventListener("click", () => {
+  sequence.pop();
+  runSequence();
+});
+$("#gate-clear").addEventListener("click", () => {
+  sequence = [];
+  runSequence();
+});
+$$("[data-gate-start]").forEach((button) =>
+  button.addEventListener("click", () => {
+    const preset = stabilizerStates[Number(button.dataset.gateStart)];
+    Object.assign(state, { p1: preset.p1, phase: preset.phase });
+    startSequence();
+    clearMeasurements();
+    updateState();
+  }),
+);
+$$("[data-gate-demo]").forEach((button) =>
+  button.addEventListener("click", () => {
+    gateInput = { p1: 0, phase: 0 };
+    sequence = button.dataset.gateDemo.split(",");
+    runSequence();
+  }),
+);
 
 function updateShots() {
   const labels = outcomes();
@@ -124,7 +206,7 @@ function setMode(mode, focus = false) {
   $("#model-boundary").textContent = info.boundary;
   $("#model-technique").textContent = info.technique;
   $("#model-source").href = `https://vgpu.sh/examples/${info.source}`;
-  $("#model-source").textContent = `vgpu source / ${info.sourceTitle} ↗`;
+  $("#model-source").textContent = `vgpu source / ${info.sourceTitle}`;
   $("#scene-label").textContent = info.title;
   $("#scene-legend").textContent = info.legend;
   $("#canvas-equation").textContent = info.equation;
@@ -133,13 +215,22 @@ function setMode(mode, focus = false) {
     $(`#${name}-controls`).hidden = i !== mode;
   });
   $$(".sphere-label").forEach((label) => {
-    label.hidden = !isSphereMode(mode) || mode === 5;
+    label.hidden = !isSphereMode(mode) || mode >= 5;
   });
   $("#phase-control").hidden = mode === 5;
   $("#preparation-readout").hidden = mode === 5;
   $("#dephase-controls").hidden = mode !== 4;
   $("#section-controls").hidden = mode !== 5;
   $("#complex-controls").hidden = mode !== 3;
+  $("#clifford-controls").hidden = mode < 6;
+  $("#operator-readout").hidden = mode !== 7;
+  $("#gate-probabilities").hidden = mode !== 6;
+  $$(".clifford-label").forEach((label) => {
+    label.hidden = mode !== 6;
+  });
+  $$(".operator-label").forEach((label) => {
+    label.hidden = mode !== 7;
+  });
   $$(".gallery-card").forEach((card) => {
     card.dataset.selected = String(Number(card.dataset.cardMode) === mode);
   });
@@ -148,8 +239,8 @@ function setMode(mode, focus = false) {
     mode === 2
       ? "128 independent preparations"
       : mode === 3
-        ? "Phase in color · intensity in brightness"
-        : "Drag to rotate ↔";
+        ? "Phase in color; intensity in brightness"
+        : "Drag to rotate";
   $("#quantum-canvas").setAttribute(
     "aria-label",
     `${info.title}. ${info.legend}.${[2, 3].includes(mode) ? "" : " Drag horizontally or use the left and right arrow keys to rotate the view."}`,
@@ -185,16 +276,19 @@ $("#coherence").addEventListener("input", (event) => {
 });
 $("#balance").addEventListener("input", (event) => {
   state.p1 = Number(event.target.value) / 100;
+  startSequence();
   clearMeasurements();
   updateState();
 });
 $("#phase").addEventListener("input", (event) => {
   state.phase = (Number(event.target.value) / 360) * TAU;
+  startSequence();
   clearMeasurements();
   updateState();
 });
 $("#flip-phase").addEventListener("click", () => {
   state.phase = (state.phase + Math.PI) % TAU;
+  startSequence();
   clearMeasurements();
   updateState();
 });
@@ -203,6 +297,7 @@ $$("[data-preset]").forEach((button) =>
     const preset = button.dataset.preset;
     state.p1 = preset === "zero" ? 0 : preset === "one" ? 1 : 0.5;
     state.phase = preset === "minus" ? Math.PI : 0;
+    startSequence();
     clearMeasurements();
     updateState();
   }),
@@ -241,7 +336,7 @@ $("#prepare").addEventListener("click", () => {
     "A fresh copy of the prepared state is ready. Measure it to sample a new outcome.";
 });
 function updatePause() {
-  $("#pause").textContent = state.paused ? "▷" : "Ⅱ";
+  $("#pause").textContent = state.paused ? "Play" : "Pause";
   $("#pause").setAttribute(
     "aria-label",
     state.paused ? "Play animation" : "Pause animation",
@@ -280,6 +375,7 @@ $("#reset").addEventListener("click", () => {
   state.coherence = 0.35;
   basis = "z";
   $("#basis").value = basis;
+  startSequence();
   clearMeasurements();
   updateState();
 });

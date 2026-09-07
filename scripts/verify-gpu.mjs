@@ -26,6 +26,8 @@ try {
     ["dephase-zero", { ...previewState(4), coherence: 0 }],
     ["dephase-pure", { ...previewState(4), coherence: 1 }],
     ["section-lower", { ...previewState(5), p1: 0.75 }],
+    ["clifford-zero", { ...previewState(6), p1: 0, phase: 0 }],
+    ["operators-h", { ...previewState(7), axes: [3, -2, 1] }],
   ];
   for (const [name, state] of cases) {
     scene.update(state);
@@ -56,6 +58,8 @@ try {
     ["complex", "complex-pi"],
     ["dephase-zero", "dephase-pure"],
     ["section", "section-lower"],
+    ["clifford", "clifford-zero"],
+    ["operators", "operators-h"],
   ]) {
     const difference = captures
       .get(a)
@@ -96,7 +100,7 @@ try {
       );
   }
   console.log(
-    "GPU checks passed: six gallery models, parameter variants, CPU/GPU phase agreement.",
+    "GPU checks passed: eight gallery models, parameter variants, CPU/GPU phase agreement.",
   );
 } finally {
   gpu.dispose();

@@ -28,6 +28,7 @@ export function sectionRadius(p1) {
 export function probabilityZero(p1, phase, basis = "z") {
   if (basis === "z") return 1 - clamp(p1);
   if (basis === "x") return clamp((1 + blochVector(p1, phase)[0]) / 2);
+  if (basis === "y") return clamp((1 + blochVector(p1, phase)[1]) / 2);
   throw new RangeError(`Unsupported basis: ${basis}`);
 }
 
@@ -36,6 +37,8 @@ export function collapse(basis, outcome) {
     throw new RangeError("Outcome must be 0 or 1");
   if (basis === "z") return { p1: outcome, phase: 0 };
   if (basis === "x") return { p1: 0.5, phase: outcome === 0 ? 0 : Math.PI };
+  if (basis === "y")
+    return { p1: 0.5, phase: outcome === 0 ? Math.PI / 2 : Math.PI * 1.5 };
   throw new RangeError(`Unsupported basis: ${basis}`);
 }
 
